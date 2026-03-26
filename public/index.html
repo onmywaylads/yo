@@ -349,7 +349,7 @@ function calc(){
   // 페널티 계산
   const penExpected = penTotal * (1 - penReduce/100);   // 관리비 후 예상 페널티
   const penDeduct   = penExpected * rate / 100;          // 예상 페널티 × 부과율 = 관리비 차감액
-  const actualMgmt  = Math.max(0, yMgmt - penDeduct);   // 실 지급 관리비
+  const actualMgmt  = yMgmt - penDeduct;   // 실 지급 관리비 (마이너스 = 허브가 추가 납부)
 
   document.getElementById('pen_total_txt').textContent = fw(penTotal);
   document.getElementById('pen_expected_txt').textContent =
@@ -434,7 +434,7 @@ function calc(){
     `예상 페널티 ${fw(penExpected)} 기준 (현재 ${fw(penTotal)}에서 ${penReduce}% 감소)`;
   document.getElementById('penRates').innerHTML=[10,20,30,40].map(r=>{
     const ded=penExpected*r/100;
-    const hubGet=Math.max(0,yMgmt-ded);
+    const hubGet=yMgmt-ded;
     const hqGet=hqBase-yMgmt-(penExpected-ded);
     return `<div class="pen-rate-card ${r===rate?'active-rate':''}">
       <div class="prc-rate">${r}% 부과</div>
@@ -487,23 +487,28 @@ function calc(){
     </div>`;
 
   // ⑤ 핵심 비교
+  const hqNowPerUnit = Math.round(hqNow / Math.max(yCount,1));
+  const hqAfterPerUnit = Math.round(hqAfter / Math.max(yCount,1));
   document.getElementById('bigCompare').innerHTML=`
     <div class="big-card now">
-      <div class="bc-tag now">지금 (현재 실제)</div>
+      <div class="bc-tag now">지금 — 관리비 없음 / 페널티 전액 본사 부담</div>
       <div class="bc-val" style="color:${clr(hqNow)}">${fws(hqNow)}</div>
       <div class="bc-sub">
-        마진 ${fw(hqBase)}<br>
-        페널티 전액 부담 −${fw(penTotal)}<br>
-        건당 ${Math.round(hqNow/Math.max(yCount,1)).toLocaleString()}원/건
+        <span style="color:var(--text3);font-size:10px;">계산 구조</span><br>
+        마진 +${fw(hqBase)}<br>
+        페널티 전액 −${fw(penTotal)}<br>
+        <span style="border-top:0.5px solid rgba(255,255,255,0.1);display:block;margin-top:4px;padding-top:4px;">건당 ${hqNowPerUnit.toLocaleString()}원 / ${yCount.toLocaleString()}건</span>
       </div>
     </div>
     <div class="big-card after">
-      <div class="bc-tag after">관리비 지급 후</div>
+      <div class="bc-tag after">관리비 지급 후 — 페널티 ${penReduce}% 감소 + ${rate}% 허브 부과</div>
       <div class="bc-val" style="color:${clr(hqAfter)}">${fws(hqAfter)}</div>
       <div class="bc-sub">
-        마진 ${fw(hqBase)}<br>
-        관리비 −${fw(yMgmt)} / 잔여페널티 −${fw(penHqBurden)}<br>
-        건당 ${Math.round(hqAfter/Math.max(yCount,1)).toLocaleString()}원/건
+        <span style="color:var(--text3);font-size:10px;">계산 구조</span><br>
+        마진 +${fw(hqBase)}<br>
+        관리비 −${fw(yMgmt)} (허브 차감 후 실지급 ${fw(actualMgmt)})<br>
+        잔여페널티 본사부담 −${fw(penHqBurden)}<br>
+        <span style="border-top:0.5px solid rgba(255,255,255,0.1);display:block;margin-top:4px;padding-top:4px;">건당 ${hqAfterPerUnit.toLocaleString()}원 / ${yCount.toLocaleString()}건</span>
       </div>
     </div>`;
 
@@ -527,14 +532,44 @@ function calc(){
 
   const beValid = breakEvenRate>=0 && breakEvenRate<=100;
   document.getElementById('roiRows').innerHTML=`
-    <div class="roi-row"><span style="color:var(--text2)">실지급 관리비 (투자)</span><span class="mono" style="color:var(--red)">-${fw(roiCost)}</span></div>
-    <div class="roi-row"><span style="color:var(--text2)">페널티 절감액 (이익)</span><span class="mono" style="color:var(--green)">+${fw(roiSavePen)}</span></div>
-    <div class="roi-row"><span style="color:var(--text2)">순 효과</span><span class="mono" style="color:${clr(roiNet)}">${fws(roiNet)}</span></div>
-    <div class="roi-row"><span style="color:var(--text2)">ROI</span><span class="mono" style="color:${clr(roiNet)}">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span></div>
-    <div class="roi-row"><span style="color:var(--text2)">손익분기 부과율</span><span class="mono" style="color:var(--amber)">${beValid?pct(breakEvenRate):'계산 불가'}</span></div>
-    <div style="padding:8px 0 2px;font-size:11px;color:var(--text3);line-height:1.7;">
+    <div class="roi-row">
+      <div>
+        <div style="color:var(--text);">실지급 관리비</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">관리비 ${fw(yMgmt)}에서 페널티 차감액 ${fw(penDeduct)}를 뺀 본사 실제 지출액</div>
+      </div>
+      <span class="mono" style="color:var(--red);white-space:nowrap;padding-left:12px;">-${fw(roiCost)}</span>
+    </div>
+    <div class="roi-row">
+      <div>
+        <div style="color:var(--text);">페널티 절감액</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">관리비 지급으로 줄어드는 페널티 금액 (현재 ${fw(penTotal)} → 예상 ${fw(penExpected)})</div>
+      </div>
+      <span class="mono" style="color:var(--green);white-space:nowrap;padding-left:12px;">+${fw(roiSavePen)}</span>
+    </div>
+    <div class="roi-row">
+      <div>
+        <div style="color:var(--text);">순 효과</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">페널티 절감액 - 실지급 관리비 = 관리비 투자 후 실제 이득/손해</div>
+      </div>
+      <span class="mono" style="color:${clr(roiNet)};white-space:nowrap;padding-left:12px;">${fws(roiNet)}</span>
+    </div>
+    <div class="roi-row">
+      <div>
+        <div style="color:var(--text);">ROI</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">실지급 관리비 대비 순효과 비율. 100% 이상이면 투자 대비 이득</div>
+      </div>
+      <span class="mono" style="color:${clr(roiNet)};white-space:nowrap;padding-left:12px;">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span>
+    </div>
+    <div class="roi-row">
+      <div>
+        <div style="color:var(--text);">손익분기 부과율</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">이 부과율로 설정하면 관리비 지급 전후 본사 손익이 동일해지는 기준점</div>
+      </div>
+      <span class="mono" style="color:var(--amber);white-space:nowrap;padding-left:12px;">${beValid?pct(breakEvenRate):'계산 불가'}</span>
+    </div>
+    <div style="padding:10px 0 2px;font-size:11px;color:var(--text3);line-height:1.7;border-top:0.5px solid var(--border);margin-top:2px;">
       ${beValid
-        ? `예상 페널티의 ${pct(breakEvenRate)}를 부과하면 현재와 손익이 동일해집니다. 현재 설정(${rate}%)은 손익분기보다 <span style="color:${rate>=breakEvenRate?'var(--green)':'var(--red)'};">${rate>=breakEvenRate?'유리':'불리'}</span>합니다.`
+        ? `예상 페널티의 <strong style="color:var(--amber)">${pct(breakEvenRate)}</strong>를 부과하면 현재와 손익이 동일해집니다. 현재 설정(${rate}%)은 손익분기보다 <span style="color:${rate>=breakEvenRate?'var(--green)':'var(--red)'};">${rate>=breakEvenRate?'유리 — 관리비 줘도 이득':'불리 — 페널티 감소율을 높이거나 부과율을 올려야 함'}</span>합니다.`
         : '현재 조건에서 손익분기 부과율을 산출할 수 없습니다.'
       }
     </div>`;
