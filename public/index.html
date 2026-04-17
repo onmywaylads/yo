@@ -5,31 +5,32 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>허브 손익 시뮬레이터</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0e0e0d;--bg2:#161615;--bg3:#1e1e1c;--bg4:#252523;--bg5:#2e2e2b;
+  --bg:#0a0a09;--bg2:#141413;--bg3:#1c1c1a;--bg4:#252523;--bg5:#2e2e2b;
   --text:#f0efe8;--text2:#9a9a94;--text3:#5a5a56;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
   --blue:#378ADD;--blue-dim:#0c447c;--blue-bg:rgba(55,138,221,0.1);
   --green:#1D9E75;--green-dim:#085041;--green-bg:rgba(29,158,117,0.1);
   --red:#E24B4A;--red-dim:#791f1f;--red-bg:rgba(226,75,74,0.1);
   --amber:#EF9F27;--amber-bg:rgba(239,159,39,0.1);
-  --radius:6px;--radius-lg:10px;
+  --purple:#7F77DD;--purple-bg:rgba(127,119,221,0.1);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
 }
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.6;min-height:100vh;}
 .mono{font-family:'JetBrains Mono',monospace;}
 
 .shell{display:grid;grid-template-columns:320px 1fr;min-height:100vh;}
-.left{background:var(--bg2);border-right:0.5px solid var(--border);padding:20px 16px 40px;overflow-y:auto;}
-.right{padding:20px 20px 60px;overflow-y:auto;}
+.left{background:var(--bg2);border-right:0.5px solid var(--border);padding:20px 16px 40px;overflow-y:auto;max-height:100vh;position:sticky;top:0;}
+.right{padding:24px 28px 60px;overflow-y:auto;}
 
 .logo{font-size:10px;letter-spacing:0.14em;color:var(--text3);margin-bottom:14px;text-transform:uppercase;}
 .logo span{color:var(--blue);}
-.page-title{font-size:15px;font-weight:500;margin-bottom:2px;}
+.page-title{font-size:16px;font-weight:500;margin-bottom:2px;}
 .page-sub{font-size:11px;color:var(--text3);margin-bottom:22px;}
 
-.sec{margin-bottom:18px;}
+.sec{margin-bottom:20px;}
 .sec-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;padding-bottom:5px;border-bottom:0.5px solid var(--border);}
 .sec-title.blue{color:var(--blue);}
 .sec-title.green{color:var(--green);}
@@ -41,112 +42,127 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .fl{font-size:11px;color:var(--text2);margin-bottom:3px;}
 input[type=number]{width:100%;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color 0.15s;}
 input[type=number]:focus{border-color:var(--blue);}
-input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
 
-/* 슬라이더 */
-.slider-wrap{margin-bottom:4px;}
-.slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.slider-label{font-size:11px;color:var(--text2);}
-.slider-val{font-size:13px;font-weight:500;font-family:'JetBrains Mono',monospace;color:var(--amber);}
+.rate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.rate-btn{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);color:var(--text2);font-size:12px;cursor:pointer;padding:7px 2px;text-align:center;transition:all 0.15s;font-family:'JetBrains Mono',monospace;font-weight:500;}
+.rate-btn:hover{border-color:var(--amber);color:var(--amber);}
+.rate-btn.active{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);font-weight:700;}
+
 input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 
-.rate-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:4px;}
-.rate-btn{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);color:var(--text2);font-size:12px;cursor:pointer;padding:6px 2px;text-align:center;transition:all 0.15s;font-family:'JetBrains Mono',monospace;}
-.rate-btn:hover{border-color:var(--amber);color:var(--amber);}
-.rate-btn.active{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);font-weight:500;}
+.hero{background:linear-gradient(180deg,var(--bg2) 0%, var(--bg) 100%);border:0.5px solid var(--border);border-radius:var(--radius-xl);padding:28px 32px;margin-bottom:28px;}
+.hero-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.hero-title{font-size:22px;font-weight:500;margin-bottom:16px;line-height:1.35;}
+.hero-title strong{color:var(--red);font-weight:700;}
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.hero-stat{border-left:2px solid var(--border2);padding-left:14px;}
+.hero-stat.red{border-color:var(--red);}
+.hero-stat.amber{border-color:var(--amber);}
+.hs-label{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.06em;}
+.hs-val{font-size:20px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1.2;}
+.hs-sub{font-size:10px;color:var(--text2);margin-top:2px;}
 
-/* RIGHT */
-.block{margin-bottom:22px;}
-.block-title{font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.block-title::after{content:'';flex:1;height:0.5px;background:var(--border);}
+.step-block{margin-bottom:28px;}
+.step-num{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;}
+.step-badge{width:22px;height:22px;border-radius:50%;background:var(--bg4);border:0.5px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text);}
+.step-badge.b{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.step-badge.g{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.step-badge.r{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+.step-badge.a{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+.step-badge.p{background:var(--purple-bg);border-color:var(--purple);color:var(--purple);}
+.step-title{font-size:15px;font-weight:500;}
+.step-lead{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;}
+.step-lead strong{color:var(--text);font-weight:500;}
 
-.mrow{display:grid;gap:8px;margin-bottom:10px;}
+.mrow{display:grid;gap:10px;}
 .mrow.g2{grid-template-columns:1fr 1fr;}
 .mrow.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
-.mrow.g4{grid-template-columns:repeat(4,minmax(0,1fr));}
-.metric{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 13px;}
+.metric{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:13px 14px;}
 .metric.hi-blue{border-color:var(--blue-dim);background:var(--blue-bg);}
 .metric.hi-green{border-color:var(--green-dim);background:var(--green-bg);}
 .metric.hi-red{border-color:var(--red-dim);background:var(--red-bg);}
 .metric.hi-amber{border-color:rgba(239,159,39,0.3);background:var(--amber-bg);}
-.m-label{font-size:10px;color:var(--text2);margin-bottom:4px;line-height:1.3;}
+.metric.hi-purple{border-color:rgba(127,119,221,0.3);background:var(--purple-bg);}
+.m-label{font-size:10px;color:var(--text2);margin-bottom:5px;line-height:1.3;}
 .m-val{font-size:17px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1.2;}
-.m-sub{font-size:10px;color:var(--text3);margin-top:3px;}
+.m-sub{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;}
 
-.cmp-item{margin-bottom:10px;}
-.cmp-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px;}
-.cmp-label strong{color:var(--text);font-family:'JetBrains Mono',monospace;}
-.bar-track{background:var(--bg4);border-radius:3px;height:28px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:600;transition:width 0.4s ease;white-space:nowrap;}
-
-.card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-.card-inner{padding:14px 16px;}
-
-.pen-rates{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.pen-rate-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 8px;text-align:center;}
-.pen-rate-card.active-rate{border-color:var(--amber);background:var(--amber-bg);}
-.prc-rate{font-size:10px;color:var(--text2);margin-bottom:5px;}
-.prc-deduct{font-size:11px;color:var(--red);margin-bottom:3px;font-family:'JetBrains Mono',monospace;}
-.prc-hub{font-size:12px;font-weight:500;font-family:'JetBrains Mono',monospace;margin-bottom:3px;}
-.prc-hq{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
-
-/* 3단계 비교 */
-.steps{display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr;gap:0;align-items:start;margin-bottom:10px;}
-.step-col{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-.step-col.best{border-color:var(--green-dim);}
-.step-head{padding:8px 12px;background:var(--bg4);font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;}
-.step-head.s1{color:var(--text2);}
-.step-head.s2{color:var(--red);}
-.step-head.s3{color:var(--green);}
-.step-row{display:flex;justify-content:space-between;padding:6px 12px;border-bottom:0.5px solid var(--border);font-size:11px;gap:6px;}
-.step-row:last-child{border-bottom:none;}
-.step-row.total{background:var(--bg4);font-weight:500;font-size:12px;}
-.step-arr{display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;padding-top:30px;}
-
-/* 핵심 비교 박스 */
-.big-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.big-card{border-radius:var(--radius-lg);padding:16px 18px;border:0.5px solid;}
+.big-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.big-card{border-radius:var(--radius-xl);padding:18px 20px;border:0.5px solid;}
 .big-card.now{background:var(--red-bg);border-color:var(--red-dim);}
 .big-card.after{background:var(--green-bg);border-color:var(--green-dim);}
-.bc-tag{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+.bc-tag{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;line-height:1.4;}
 .bc-tag.now{color:var(--red);}
 .bc-tag.after{color:var(--green);}
-.bc-val{font-size:26px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:6px;}
-.bc-sub{font-size:11px;color:var(--text2);line-height:1.6;}
+.bc-val{font-size:28px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:8px;}
+.bc-sub{font-size:11px;color:var(--text2);line-height:1.7;}
 
-.diff-banner{border-radius:var(--radius-lg);padding:12px 16px;text-align:center;font-size:13px;font-weight:500;}
+.mgmt-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.mgmt-card{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;}
+.mgmt-card.primary{border-color:var(--purple);}
+.mgmt-head{padding:10px 14px;background:var(--bg4);}
+.mgmt-tag{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text2);margin-bottom:2px;}
+.mgmt-card.primary .mgmt-tag{color:var(--purple);}
+.mgmt-head-title{font-size:12px;font-weight:500;color:var(--text);}
+.mgmt-body{padding:16px 14px 14px;}
+.mgmt-val{font-size:22px;font-weight:500;font-family:'JetBrains Mono',monospace;line-height:1;margin-bottom:8px;color:var(--text);}
+.mgmt-card.primary .mgmt-val{color:var(--purple);}
+.mgmt-line{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:0.5px solid var(--border);gap:6px;}
+.mgmt-line:last-child{border-bottom:none;}
+.mgmt-line span:first-child{color:var(--text2);}
+.mgmt-line span:last-child{font-family:'JetBrains Mono',monospace;text-align:right;}
 
-.roi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px;}
+.sim-wrap{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-xl);padding:18px 20px;}
+.sim-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px;gap:12px;}
+.sim-label{font-size:11px;color:var(--text2);}
+.sim-val{font-size:22px;font-weight:500;font-family:'JetBrains Mono',monospace;color:var(--amber);line-height:1;}
+.sim-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+.sim-slider{width:100%;accent-color:var(--amber);height:6px;margin:10px 0 14px;}
+.sim-results{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+
+.diff-banner{border-radius:var(--radius-lg);padding:13px 18px;text-align:center;font-size:13px;font-weight:500;line-height:1.5;}
+
+.roi-list{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;}
+.roi-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:0.5px solid var(--border);gap:12px;}
 .roi-row:last-child{border-bottom:none;}
+.roi-label-main{font-size:13px;color:var(--text);}
+.roi-label-desc{font-size:10px;color:var(--text3);margin-top:2px;line-height:1.5;}
+.roi-val{font-family:'JetBrains Mono',monospace;font-weight:500;white-space:nowrap;padding-left:12px;font-size:14px;}
 
-.ai-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-.ai-head{background:var(--bg4);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
-.ai-head-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);}
-.btn-ai{background:var(--blue-bg);border:0.5px solid var(--blue);border-radius:var(--radius);color:var(--blue);font-size:11px;font-weight:500;padding:5px 12px;cursor:pointer;transition:all 0.15s;}
-.btn-ai:hover{background:var(--blue);color:#fff;}
+.ai-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;}
+.ai-head{background:var(--bg4);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.ai-head-title{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);}
+.btn-ai{background:var(--blue);border:none;border-radius:var(--radius);color:#fff;font-size:12px;font-weight:500;padding:7px 14px;cursor:pointer;transition:all 0.15s;}
+.btn-ai:hover{background:#2a6fb5;}
 .btn-ai:disabled{opacity:0.4;cursor:not-allowed;}
-.ai-body{padding:16px;font-size:13px;line-height:1.9;white-space:pre-wrap;word-break:break-word;min-height:80px;color:var(--text);}
+.ai-body{padding:20px;font-size:13px;line-height:1.9;white-space:pre-wrap;word-break:break-word;min-height:100px;color:var(--text);}
 .ai-ph{color:var(--text3);font-size:12px;}
 
-::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .left{position:static;max-height:none;}
+  .hero-grid,.mgmt-3{grid-template-columns:1fr;}
+  .sim-results{grid-template-columns:1fr 1fr;}
+  .big-compare{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 <div class="shell">
 
-<!-- ══ LEFT ══ -->
 <div class="left">
   <div class="logo">Barogo <span>북부광역</span> · Hub Simulator</div>
   <div class="page-title">허브 손익 시뮬레이터</div>
-  <div class="page-sub">경영진 설득용 · 관리비 책정 근거 분석</div>
+  <div class="page-sub">허브 · 본사 손익 분석</div>
 
-  <!-- 요기배달 -->
   <div class="sec">
-    <div class="sec-title blue">요기배달</div>
+    <div class="sec-title blue">요기배달 운영</div>
     <div class="field">
       <div class="fl">월 배달 건수</div>
-      <input type="number" id="y_count" value="780" step="10" oninput="calc()"/>
+      <input type="number" id="y_count" value="1549" step="10" oninput="calc()"/>
     </div>
     <div class="field-row">
       <div>
@@ -160,188 +176,209 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
     </div>
   </div>
 
-  <!-- C2C -->
   <div class="sec">
-    <div class="sec-title green">C2C</div>
+    <div class="sec-title">본사 누적 데이터</div>
+    <div class="field">
+      <div class="fl">건당 본사 마진 (원, 매출-매입)</div>
+      <input type="number" id="hq_margin" value="456" step="10" oninput="calc()"/>
+    </div>
+    <div class="field">
+      <div class="fl">C2C 관리비 수익 (월, 원)</div>
+      <input type="number" id="c_hq_rev" value="154900" step="10000" oninput="calc()"/>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title green">C2C 기준 (허브 갭 비교용)</div>
     <div class="field-row">
       <div>
         <div class="fl">상점 월 관리비 (원)</div>
         <input type="number" id="c_mgmt" value="50000" step="10000" oninput="calc()"/>
       </div>
       <div>
-        <div class="fl">상점 일 평균 건수</div>
+        <div class="fl">상점 일 건수</div>
         <input type="number" id="c_daily" value="5" step="1" oninput="calc()"/>
       </div>
     </div>
     <div class="field">
-      <div class="fl">라이더 후차감 (원)</div>
+      <div class="fl">C2C 라이더 후차감 (원)</div>
       <input type="number" id="c_rider" value="100" step="50" oninput="calc()"/>
     </div>
   </div>
 
-  <!-- 이 지역 관리비 -->
-  <div class="sec">
-    <div class="sec-title amber">이 지역 적용 관리비 (본사→허브)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-      <div class="rate-btn active" id="mgmt_per_btn" onclick="setMgmtType('per')">건당 관리비</div>
-      <div class="rate-btn" id="mgmt_fix_btn" onclick="setMgmtType('fixed')">정액 관리비</div>
-    </div>
-    <div id="mgmt_per_wrap">
-      <div class="fl">건당 관리비 (원)</div>
-      <input type="number" id="y_mgmt_per" value="400" step="50" oninput="calc()"/>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px;">월 관리비: <span id="mgmt_per_total" class="mono" style="color:var(--amber);">—</span></div>
-    </div>
-    <div id="mgmt_fix_wrap" style="display:none;">
-      <div class="fl">월 관리비 (원)</div>
-      <input type="number" id="y_mgmt_fix" value="300000" step="50000" oninput="calc()"/>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px;">건당 환산: <span id="mgmt_fix_per" class="mono" style="color:var(--amber);">—</span></div>
-    </div>
-    <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.6;" id="mgmt_ref_txt"></div>
-  </div>
-
-  <!-- 본사 매출/매입 -->
-  <div class="sec">
-    <div class="sec-title">본사 매출 / 매입 단가</div>
-    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">1.5km 기본 + 100m당 추가 구조</div>
-    <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:5px;">매출 (본사 수취)</div>
-    <div class="field-row">
-      <div>
-        <div class="fl">1.5km 기본요금 (원)</div>
-        <input type="number" id="sale_base" value="3500" step="100" oninput="calc()"/>
-      </div>
-      <div>
-        <div class="fl">100m당 추가요금 (원)</div>
-        <input type="number" id="sale_extra" value="100" step="10" oninput="calc()"/>
-      </div>
-    </div>
-    <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:5px;margin-top:4px;">매입 (라이더 지급)</div>
-    <div class="field-row">
-      <div>
-        <div class="fl">1.5km 기본요금 (원)</div>
-        <input type="number" id="buy_base" value="3000" step="100" oninput="calc()"/>
-      </div>
-      <div>
-        <div class="fl">100m당 추가요금 (원)</div>
-        <input type="number" id="buy_extra" value="80" step="10" oninput="calc()"/>
-      </div>
-    </div>
-    <div class="field" style="margin-top:4px;">
-      <div class="fl">평균 배달거리 (km)</div>
-      <input type="number" id="avg_dist" value="2.0" step="0.1" min="1.5" oninput="calc()"/>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--blue-bg);border:0.5px solid var(--blue-dim);border-radius:var(--radius);margin-top:2px;">
-      <span style="font-size:11px;color:var(--text2);">건당 본사 마진 (자동계산)</span>
-      <span class="mono" style="font-size:13px;color:var(--blue);font-weight:500;" id="hq_margin_txt">—</span>
-    </div>
-  </div>
-
-  <!-- 페널티 -->
   <div class="sec">
     <div class="sec-title red">페널티 현황 (월)</div>
     <div class="field">
-      <div class="fl">상품보상액 (원)</div>
-      <input type="number" id="pen_product" value="1200000" step="100000" oninput="calc()"/>
+      <div class="fl">손해배상 (원)</div>
+      <input type="number" id="pen_product" value="542010" step="10000" oninput="calc()"/>
     </div>
     <div class="field">
-      <div class="fl">장기지연 페널티 (원)</div>
-      <input type="number" id="pen_delay" value="800000" step="100000" oninput="calc()"/>
+      <div class="fl">장기지연 (원)</div>
+      <input type="number" id="pen_delay" value="522725" step="10000" oninput="calc()"/>
     </div>
     <div class="field">
-      <div class="fl">SLA 페널티 (원)</div>
-      <input type="number" id="pen_sla" value="1000000" step="100000" oninput="calc()"/>
+      <div class="fl">SLA (원)</div>
+      <input type="number" id="pen_sla" value="522725" step="10000" oninput="calc()"/>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--red-bg);border:0.5px solid var(--red-dim);border-radius:var(--radius);margin-top:2px;margin-bottom:12px;">
+    <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--red-bg);border:0.5px solid var(--red-dim);border-radius:var(--radius);">
       <span style="font-size:11px;color:var(--text2);">페널티 합산</span>
       <span class="mono" style="font-size:13px;color:var(--red);font-weight:500;" id="pen_total_txt">—</span>
     </div>
+  </div>
 
-    <!-- 페널티 감소율 슬라이더 -->
-    <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:12px 12px 10px;">
-      <div class="slider-wrap">
-        <div class="slider-row">
-          <span class="slider-label">관리비 지급 시 예상 페널티 감소율</span>
-          <span class="slider-val" id="reduce_val">30%</span>
-        </div>
-        <input type="range" id="pen_reduce" min="0" max="100" step="5" value="30" oninput="onSlider()"/>
-        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px;">
-          <span>0%</span><span>50%</span><span>100%</span>
-        </div>
-      </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text2);">
-        예상 페널티: <span class="mono" id="pen_expected_txt" style="color:var(--amber);">—</span>
-      </div>
+  <div class="sec">
+    <div class="sec-title amber">관리비 지급 조건</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px;">
+      <div class="rate-btn active" id="mgmt_per_btn" onclick="setMgmtType('per')" style="font-size:11px;padding:7px 2px;">건당 고정</div>
+      <div class="rate-btn" id="mgmt_fix_btn" onclick="setMgmtType('fixed')" style="font-size:11px;padding:7px 2px;">정액 (월)</div>
+      <div class="rate-btn" id="mgmt_sla_btn" onclick="setMgmtType('sla')" style="font-size:11px;padding:7px 2px;">SLA 등급</div>
     </div>
 
-    <div style="margin-top:10px;">
-      <div class="fl" style="margin-bottom:5px;">관리비 차감 페널티 부과율</div>
-      <div class="rate-grid" id="rateGrid">
-        <div class="rate-btn" data-rate="10" onclick="setRate(10)">10%</div>
-        <div class="rate-btn active" data-rate="20" onclick="setRate(20)">20%</div>
-        <div class="rate-btn" data-rate="30" onclick="setRate(30)">30%</div>
-        <div class="rate-btn" data-rate="40" onclick="setRate(40)">40%</div>
+    <div id="mgmt_per_wrap">
+      <div class="fl">건당 관리비 (원)</div>
+      <input type="number" id="y_mgmt_per" value="300" step="50" oninput="calc()"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">월 관리비: <span id="mgmt_per_total" class="mono" style="color:var(--amber);">—</span></div>
+    </div>
+
+    <div id="mgmt_fix_wrap" style="display:none;">
+      <div class="fl">월 관리비 (원)</div>
+      <input type="number" id="y_mgmt_fix" value="500000" step="50000" oninput="calc()"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">건당 환산: <span id="mgmt_fix_per" class="mono" style="color:var(--amber);">—</span></div>
+    </div>
+
+    <div id="mgmt_sla_wrap" style="display:none;">
+      <div class="fl" style="margin-bottom:5px;">예상 SLA 등급대</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px;">
+        <div class="rate-btn active" id="sla_ab_btn" onclick="setSlaGrade('ab')" style="font-size:11px;padding:7px 2px;">A/B 등급 (우수)</div>
+        <div class="rate-btn" id="sla_cf_btn" onclick="setSlaGrade('cf')" style="font-size:11px;padding:7px 2px;">C~F 등급 (보통)</div>
       </div>
+      <div class="field-row" style="margin-bottom:4px;">
+        <div>
+          <div class="fl">A/B 단가 (원)</div>
+          <input type="number" id="sla_ab_price" value="500" step="50" oninput="calc()"/>
+        </div>
+        <div>
+          <div class="fl">C~F 단가 (원)</div>
+          <input type="number" id="sla_cf_price" value="300" step="50" oninput="calc()"/>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">월 관리비: <span id="mgmt_sla_total" class="mono" style="color:var(--amber);">—</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title amber">페널티 효과 예측</div>
+    <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--text2);">페널티 예상 감소율</span>
+        <span style="font-size:13px;font-weight:500;font-family:'JetBrains Mono',monospace;color:var(--amber);" id="reduce_val">30%</span>
+      </div>
+      <input type="range" id="pen_reduce" min="0" max="100" step="5" value="30" oninput="onSlider()"/>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:2px;">
+        <span>0%</span><span>50%</span><span>100%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-title">페널티 부과율</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:6px;">관리비에서 차감할 비율</div>
+    <div class="rate-grid" id="rateGrid">
+      <div class="rate-btn active" data-rate="10" onclick="setRate(10)">10%</div>
+      <div class="rate-btn" data-rate="20" onclick="setRate(20)">20%</div>
+      <div class="rate-btn" data-rate="30" onclick="setRate(30)">30%</div>
+      <div class="rate-btn" data-rate="40" onclick="setRate(40)">40%</div>
     </div>
   </div>
 </div>
 
-<!-- ══ RIGHT ══ -->
 <div class="right">
 
-  <!-- ① 수익 비교 -->
-  <div class="block">
-    <div class="block-title">① 수익 비교 — 관리비 책정 사유</div>
-    <div class="mrow g3" id="channelMetrics"></div>
-    <div class="card">
-      <div class="card-inner">
-        <div id="cmpBars"></div>
-        <div id="gapBox" style="margin-top:4px;"></div>
+  <div class="hero">
+    <div class="hero-label">현황 진단</div>
+    <div class="hero-title" id="heroTitle">분석 중...</div>
+    <div class="hero-grid" id="heroGrid"></div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge r">1</span>
+      <span class="step-title">요기배달 vs C2C — 허브 건당 수익 비교</span>
+    </div>
+    <div class="step-lead">같은 건수를 수행해도 채널별 허브 수익이 다릅니다. 허브 입장의 수행 동기 구조를 확인합니다.</div>
+    <div class="mrow g3" id="step1Metrics"></div>
+    <div class="diff-banner" id="step1Banner" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge g">2</span>
+      <span class="step-title">관리비 지급 전후 본사 손익 비교</span>
+    </div>
+    <div class="step-lead">관리비 미지급 상태와 지급 시나리오의 본사 월 손익을 비교합니다.</div>
+    <div class="big-compare" id="step2Compare"></div>
+    <div class="diff-banner" id="step2Banner"></div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge p">3</span>
+      <span class="step-title">관리비 책정 기준 — 3가지 관점</span>
+    </div>
+    <div class="step-lead">부과율 <strong id="step3Rate">10%</strong> 기준, 3가지 관점에서 적정 관리비를 산출합니다.</div>
+    <div class="mgmt-3" id="mgmtCards"></div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge a">4</span>
+      <span class="step-title">관리비 시뮬레이션</span>
+    </div>
+    <div class="step-lead">슬라이더로 관리비 금액을 조정하며 본사 손익·허브 실수취액 변화를 확인합니다.</div>
+    <div class="sim-wrap">
+      <div class="sim-head">
+        <div>
+          <div class="sim-label">월 관리비</div>
+          <div class="sim-val mono" id="simVal">0원</div>
+          <div class="sim-sub" id="simSub">건당 환산 0원</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="sim-label">본사 월 손익</div>
+          <div class="sim-val mono" id="simHq">—</div>
+          <div class="sim-sub" id="simHqSub">관리비 지급 후</div>
+        </div>
       </div>
+      <input type="range" id="simSlider" class="sim-slider" min="0" max="2000000" step="10000" value="300000" oninput="onSimSlider()"/>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:14px;">
+        <span>0원</span>
+        <span id="simMid">100만원</span>
+        <span id="simMax">200만원</span>
+      </div>
+      <div class="sim-results" id="simResults"></div>
     </div>
   </div>
 
-  <!-- ② 채널 불균형 -->
-  <div class="block">
-    <div class="block-title">② 채널 불균형 지표</div>
-    <div class="mrow g3" id="imbalanceMetrics"></div>
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge b">5</span>
+      <span class="step-title">ROI 분석</span>
+    </div>
+    <div class="step-lead">관리비 투자 대비 페널티 절감 효과를 분석합니다.</div>
+    <div class="mrow g2" id="roiTop" style="margin-bottom:12px;"></div>
+    <div class="roi-list" id="roiList"></div>
   </div>
 
-  <!-- ③ 페널티 부과율별 -->
-  <div class="block">
-    <div class="block-title">③ 부과율별 허브 수취 / 본사 마진</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;" id="pen_scenario_sub"></div>
-    <div class="pen-rates" id="penRates"></div>
-  </div>
-
-  <!-- ④ 본사 손익 3단계 -->
-  <div class="block">
-    <div class="block-title">④ 본사 손익 3단계 비교 (월)</div>
-    <div class="steps" id="threeSteps"></div>
-    <div class="mrow g2" id="perUnitRow"></div>
-  </div>
-
-  <!-- ⑤ 핵심 손익 비교 -->
-  <div class="block">
-    <div class="block-title">⑤ 지금 vs 관리비 지급 후 — 총합산 마진</div>
-    <div class="big-compare" id="bigCompare"></div>
-    <div class="diff-banner" id="diffBanner"></div>
-  </div>
-
-  <!-- ⑥ ROI -->
-  <div class="block">
-    <div class="block-title">⑥ ROI / 손익분기 부과율</div>
-    <div class="mrow g2" id="roiMetrics"></div>
-    <div class="card"><div class="card-inner" id="roiRows"></div></div>
-  </div>
-
-  <!-- ⑦ AI -->
-  <div class="block">
-    <div class="block-title">⑦ AI 종합 판단</div>
+  <div class="step-block">
+    <div class="step-num">
+      <span class="step-badge">6</span>
+      <span class="step-title">AI 종합 판단</span>
+    </div>
     <div class="ai-wrap">
       <div class="ai-head">
-        <span class="ai-head-title">입력 데이터 기반 경영 전략 분석</span>
+        <span class="ai-head-title">입력 데이터 기반 요약 분석</span>
         <button class="btn-ai" id="aiBtn" onclick="runAI()">분석 시작 ↗</button>
       </div>
-      <div class="ai-body" id="aiBody"><span class="ai-ph">입력값 확인 후 분석 시작 버튼을 누르세요.</span></div>
+      <div class="ai-body" id="aiBody"><span class="ai-ph">분석 시작 버튼을 누르면 입력 데이터 기반 분석을 생성합니다.</span></div>
     </div>
   </div>
 
@@ -349,26 +386,43 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 </div>
 
 <script>
-let selectedRate=20;
-let mgmtType='per'; // 'per' = 건당, 'fixed' = 정액
+let selectedRate=10;
+let simMgmt=300000;
+let mgmtType='per';  // 'per' | 'fixed' | 'sla'
+let slaGrade='ab';   // 'ab' | 'cf'
 
 function setMgmtType(t){
   mgmtType=t;
-  document.getElementById('mgmt_per_btn').classList.toggle('active', t==='per');
-  document.getElementById('mgmt_fix_btn').classList.toggle('active', t==='fixed');
-  document.getElementById('mgmt_per_wrap').style.display = t==='per'?'block':'none';
-  document.getElementById('mgmt_fix_wrap').style.display = t==='fixed'?'block':'none';
+  ['per','fix','sla'].forEach(k=>{
+    const btn=document.getElementById('mgmt_'+k+'_btn');
+    const wrap=document.getElementById('mgmt_'+k+'_wrap');
+    if(!btn||!wrap) return;
+    const active = (k===t || (k==='fix'&&t==='fixed'));
+    btn.classList.toggle('active', active);
+    wrap.style.display = active ? 'block' : 'none';
+  });
   calc();
 }
+
+function setSlaGrade(g){
+  slaGrade=g;
+  document.getElementById('sla_ab_btn').classList.toggle('active', g==='ab');
+  document.getElementById('sla_cf_btn').classList.toggle('active', g==='cf');
+  calc();
+}
+
 function setRate(r){
   selectedRate=r;
-  document.querySelectorAll('.rate-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.rate)===r));
+  document.querySelectorAll('#rateGrid .rate-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.rate)===r));
   calc();
 }
 function onSlider(){
-  const v=document.getElementById('pen_reduce').value;
-  document.getElementById('reduce_val').textContent=v+'%';
+  document.getElementById('reduce_val').textContent=document.getElementById('pen_reduce').value+'%';
   calc();
+}
+function onSimSlider(){
+  simMgmt=parseInt(document.getElementById('simSlider').value);
+  renderSim();
 }
 
 function n(id){return parseFloat(document.getElementById(id)?.value)||0;}
@@ -384,34 +438,8 @@ function calc(){
   const cMgmt    = n('c_mgmt');
   const cDaily   = n('c_daily')||1;
   const cRider   = n('c_rider');
-
-  // ── 매출/매입 거리 계산
-  const saleBase  = n('sale_base');
-  const saleExtra = n('sale_extra');
-  const buyBase   = n('buy_base');
-  const buyExtra  = n('buy_extra');
-  const avgDist   = n('avg_dist') || 1.5;
-  const extraSteps = Math.max(0, Math.round((avgDist - 1.5) / 0.1));
-  const salePerUnit = saleBase + saleExtra * extraSteps;
-  const buyPerUnit  = buyBase  + buyExtra  * extraSteps;
-  const hqMargin    = salePerUnit - buyPerUnit;
-
-  // 자동계산 표시
-  document.getElementById('hq_margin_txt').textContent =
-    `${hqMargin.toLocaleString()}원 (매출 ${salePerUnit.toLocaleString()} - 매입 ${buyPerUnit.toLocaleString()})`;
-
-  // ── 관리비 계산
-  let yMgmt;
-  if(mgmtType === 'per'){
-    const perUnit = n('y_mgmt_per');
-    yMgmt = perUnit * yCount;
-    document.getElementById('mgmt_per_total').textContent = yMgmt.toLocaleString()+'원';
-  } else {
-    yMgmt = n('y_mgmt_fix');
-    const perUnit = yCount > 0 ? yMgmt / yCount : 0;
-    document.getElementById('mgmt_fix_per').textContent = Math.round(perUnit).toLocaleString()+'원/건';
-  }
-
+  const hqMargin = n('hq_margin');
+  const cHqRev   = n('c_hq_rev');
   const penProd  = n('pen_product');
   const penDelay = n('pen_delay');
   const penSla   = n('pen_sla');
@@ -419,299 +447,338 @@ function calc(){
   const penReduce= parseInt(document.getElementById('pen_reduce').value)||0;
   const rate     = selectedRate;
 
-  // 페널티 계산
-  const penExpected = penTotal * (1 - penReduce/100);   // 관리비 후 예상 페널티
-  const penDeduct   = penExpected * rate / 100;          // 예상 페널티 × 부과율 = 관리비 차감액
-  const actualMgmt  = yMgmt - penDeduct;   // 실 지급 관리비 (마이너스 = 허브가 추가 납부)
-
   document.getElementById('pen_total_txt').textContent = fw(penTotal);
-  document.getElementById('pen_expected_txt').textContent =
-    `${fw(penExpected)} (${fw(penTotal - penExpected)} 감소)`;
+  document.getElementById('step3Rate').textContent = rate+'%';
 
-  // ── 수익 비교
-  const yPerUnit   = yFixed + yRider;
-  const cMonthCount= cDaily * 26;
-  const cMgmtUnit  = cMonthCount > 0 ? cMgmt / cMonthCount : 0;
-  const cPerUnit   = cRider + cMgmtUnit;
-  const yHubRev    = yPerUnit * yCount;
-  const cHubRev    = cPerUnit * yCount;
-  const gap        = cHubRev - yHubRev;
-  const imbalancePct = cPerUnit > 0 ? (cPerUnit - yPerUnit) / cPerUnit * 100 : 0;
+  const penExpected = penTotal * (1 - penReduce/100);
+  const penSave     = penTotal - penExpected;
 
-  document.getElementById('mgmt_ref_txt').textContent =
-    `갭 기준 추천: ${fw(Math.max(0,gap))} / 건당 ${Math.round(Math.max(0,gap)/Math.max(yCount,1)).toLocaleString()}원`;
+  // 허브 관점
+  const yHubPerUnit = yFixed + yRider;
+  const cMonthCount = cDaily * 26;
+  const cMgmtUnit   = cMonthCount > 0 ? cMgmt / cMonthCount : 0;
+  const cHubPerUnit = cRider + cMgmtUnit;
+  const yHubRev     = yHubPerUnit * yCount;
+  const cHubRev     = cHubPerUnit * yCount;
+  const gap         = cHubRev - yHubRev;
+  const gapPct      = cHubPerUnit > 0 ? (cHubPerUnit - yHubPerUnit) / cHubPerUnit * 100 : 0;
 
-  // ── 본사 손익
-  const hqBase     = hqMargin * yCount;   // 순마진 (페널티 반영 전)
-  const hqNow      = hqBase - penTotal;   // 현재 실제 (페널티 전액 부담)
-  // 변경: 관리비 지급 + 예상 페널티 중 부과율만큼 허브 전가, 나머지 본사 부담
-  const penHqBurden= penExpected - penDeduct;  // 본사가 여전히 부담하는 페널티
-  const hqAfter    = hqBase - yMgmt - penHqBurden;
-  const hqDiff     = hqAfter - hqNow;
-  const hqDiffPerUnit = yCount > 0 ? hqDiff / yCount : 0;
+  // 본사
+  const hqRevMonth = hqMargin * yCount + cHqRev;
+  const hqNow      = hqRevMonth - penTotal;
 
-  // ROI
-  const roiSavePen  = penTotal - penExpected;  // 페널티 절감액
-  const roiCost     = actualMgmt;              // 실지급 관리비 (실제 투자액)
-  const roiNet      = roiSavePen - roiCost;    // 순효과 = 절감 - 실투자
-  const roiPct      = roiCost > 0 ? roiNet / roiCost * 100 : 0;
-  // 손익분기: hqAfter = hqNow → rate = (yMgmt + penExpected - penTotal) / penExpected * 100
-  const breakEvenRate = penExpected > 0 ? (yMgmt + penExpected - penTotal) / penExpected * 100 : 0;
-
-  // ═══ RENDER ═══
-
-  // ① 수익 비교
-  document.getElementById('channelMetrics').innerHTML=[
-    {label:'요기배달 허브 월 수익',val:fw(yHubRev),sub:`건당 ${fw(yPerUnit)} × ${yCount.toLocaleString()}건`,cls:'hi-blue'},
-    {label:'C2C 허브 월 수익 (동일건수)',val:fw(cHubRev),sub:`건당 ${fw(cPerUnit)} × ${yCount.toLocaleString()}건`,cls:'hi-green'},
-    {label:'C2C 대비 갭',val:gap>0?'-'+fw(gap):'+'+fw(-gap),sub:gap>0?'허브 입장 요기배달 불리':'요기배달이 유리',cls:gap>0?'hi-red':'hi-green'},
-  ].map(it=>`<div class="metric ${it.cls}">
-    <div class="m-label">${it.label}</div>
-    <div class="m-val">${it.val}</div>
-    <div class="m-sub">${it.sub}</div>
-  </div>`).join('');
-
-  const maxR=Math.max(yHubRev,cHubRev)||1;
-  document.getElementById('cmpBars').innerHTML=`
-    <div class="cmp-item">
-      <div class="cmp-label"><span>요기배달 (월)</span><strong>${fw(yHubRev)}</strong></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${yHubRev/maxR*100}%;background:var(--blue);color:#fff;">${yHubRev/maxR>0.2?fw(yHubRev):''}</div></div>
-    </div>
-    <div class="cmp-item">
-      <div class="cmp-label"><span>C2C 동일건수 (월)</span><strong>${fw(cHubRev)}</strong></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${cHubRev/maxR*100}%;background:var(--green);color:#fff;">${cHubRev/maxR>0.2?fw(cHubRev):''}</div></div>
-    </div>`;
-
-  document.getElementById('gapBox').innerHTML = gap > 0
-    ? `<div style="margin-top:8px;padding:9px 12px;background:var(--red-bg);border:0.5px solid var(--red-dim);border-radius:var(--radius);font-size:12px;color:var(--red);">
-        같은 <strong>${yCount.toLocaleString()}건</strong>을 수행해도 C2C 대비 <strong>${fw(gap)}</strong> 덜 법니다.
-        이 갭만큼 관리비로 보전해야 허브가 요기배달을 동등하게 수행할 동기가 생깁니다.
-      </div>`
-    : `<div style="margin-top:8px;padding:9px 12px;background:var(--green-bg);border:0.5px solid var(--green-dim);border-radius:var(--radius);font-size:12px;color:var(--green);">
-        요기배달이 C2C 대비 이미 <strong>${fw(-gap)}</strong> 유리한 구조입니다.
-      </div>`;
-
-  // ② 채널 불균형
-  document.getElementById('imbalanceMetrics').innerHTML=[
-    {label:'요기배달 건당 허브 수익',val:fw(yPerUnit),sub:`고정 ${fw(yFixed)} + 후차감 ${fw(yRider)}`,cls:'hi-blue'},
-    {label:'C2C 건당 허브 수익',val:fw(cPerUnit),sub:`후차감 ${fw(cRider)} + 관리비환산 ${fw(cMgmtUnit)}`,cls:'hi-green'},
-    {label:'요기배달 불리 비율',val:imbalancePct>0?pct(imbalancePct):'균형',sub:imbalancePct>0?`C2C 대비 ${pct(imbalancePct)} 낮음`:'요기배달 우위',cls:imbalancePct>20?'hi-red':imbalancePct>0?'hi-amber':'hi-green'},
-  ].map(it=>`<div class="metric ${it.cls}">
-    <div class="m-label">${it.label}</div>
-    <div class="m-val">${it.val}</div>
-    <div class="m-sub">${it.sub}</div>
-  </div>`).join('');
-
-  // ③ 부과율별 (예상 페널티 기준)
-  document.getElementById('pen_scenario_sub').textContent=
-    `예상 페널티 ${fw(penExpected)} 기준 (현재 ${fw(penTotal)}에서 ${penReduce}% 감소)`;
-  document.getElementById('penRates').innerHTML=[10,20,30,40].map(r=>{
-    const ded=penExpected*r/100;
-    const hubGet=yMgmt-ded;
-    const hqGet=hqBase-yMgmt-(penExpected-ded);
-    return `<div class="pen-rate-card ${r===rate?'active-rate':''}">
-      <div class="prc-rate">${r}% 부과</div>
-      <div class="prc-deduct">차감 −${fw(ded)}</div>
-      <div class="prc-hub" style="color:${clr(hubGet)}">허브 ${fw(hubGet)}</div>
-      <div class="prc-hq" style="color:${clr(hqGet)}">본사 ${hqGet>=0?'+':''}${Math.round(hqGet).toLocaleString()}원</div>
-    </div>`;
-  }).join('');
-
-  // ④ 3단계
-  function sr(label,val,vc='',small=false){
-    return `<div class="step-row"><span style="color:var(--text2);font-size:${small?'10':'11'}px;">${label}</span><span class="mono" style="font-size:${small?'10':'11'}px;color:${vc||'var(--text)'};">${val}</span></div>`;
+  // ── 관리비 형태별 실제 설정값 계산
+  let setMgmt = 0;
+  let mgmtDesc = '';
+  if(mgmtType === 'per'){
+    const perVal = n('y_mgmt_per');
+    setMgmt = perVal * yCount;
+    document.getElementById('mgmt_per_total').textContent = setMgmt.toLocaleString()+'원';
+    mgmtDesc = `건당 ${perVal.toLocaleString()}원 × ${yCount.toLocaleString()}건`;
+  } else if(mgmtType === 'fixed'){
+    setMgmt = n('y_mgmt_fix');
+    const per = yCount>0 ? setMgmt/yCount : 0;
+    document.getElementById('mgmt_fix_per').textContent = Math.round(per).toLocaleString()+'원/건';
+    mgmtDesc = `정액 ${fw(setMgmt)}`;
+  } else { // sla
+    const abRate = n('sla_ab_price');
+    const cfRate = n('sla_cf_price');
+    const selectedRateVal = slaGrade === 'ab' ? abRate : cfRate;
+    setMgmt = selectedRateVal * yCount;
+    document.getElementById('mgmt_sla_total').textContent = setMgmt.toLocaleString()+'원';
+    const gradeLabel = slaGrade === 'ab' ? 'A/B (우수)' : 'C~F (보통)';
+    mgmtDesc = `${gradeLabel} 등급 · 건당 ${selectedRateVal.toLocaleString()}원 × ${yCount.toLocaleString()}건`;
   }
-  document.getElementById('threeSteps').innerHTML=`
-    <div class="step-col">
-      <div class="step-head s1">기존 마진</div>
-      ${sr('월 건수',yCount.toLocaleString()+'건')}
-      ${sr('건당 마진',fw(hqMargin))}
-      ${sr('페널티','없음(반영전)','var(--text3)')}
-      <div class="step-row total"><span>월 순손익</span><span class="mono" style="color:${clr(hqBase)}">${fws(hqBase)}</span></div>
+
+  // 3가지 관리비 기준 (참고용)
+  const mgmtBreakEven = penTotal - penExpected * (1 - rate/100);
+  const mgmtRecovery  = penSave + penExpected * rate / 100;
+  const mgmtGap       = Math.max(0, gap);
+
+  function calcHq(mgmt){
+    const ded = penExpected * rate / 100;
+    const actual = mgmt - ded;
+    const hqAfter = hqRevMonth - mgmt - (penExpected - ded);
+    return {ded, actual, hqAfter, hubGet: mgmt - ded};
+  }
+
+  // HERO
+  const loss = hqNow;
+  const lossPerUnit = yCount>0 ? hqNow / yCount : 0;
+  const marginPct = hqRevMonth>0 ? loss / hqRevMonth * 100 : 0;
+  document.getElementById('heroTitle').innerHTML = loss < 0
+    ? `이 지역 월 순손익은 <strong>${fws(loss)}</strong>입니다. 본사 수익 대비 페널티가 과도한 상태입니다.`
+    : `이 지역 월 순손익은 <strong style="color:var(--amber)">${fws(loss)}</strong>입니다. 페널티 비중을 확인해주세요.`;
+
+  document.getElementById('heroGrid').innerHTML = `
+    <div class="hero-stat">
+      <div class="hs-label">본사 월 수익 (마진+C2C)</div>
+      <div class="hs-val">${fw(hqRevMonth)}</div>
+      <div class="hs-sub">건당 ${fw(hqMargin)} × ${yCount.toLocaleString()}건 + C2C ${fw(cHqRev)}</div>
     </div>
-    <div class="step-arr">→</div>
-    <div class="step-col">
-      <div class="step-head s2">현재 실제</div>
-      ${sr('월 건수',yCount.toLocaleString()+'건')}
-      ${sr('건당 마진',fw(hqMargin))}
-      ${sr('페널티 전액','-'+fw(penTotal),'var(--red)')}
-      <div class="step-row total"><span>월 순손익</span><span class="mono" style="color:${clr(hqNow)}">${fws(hqNow)}</span></div>
+    <div class="hero-stat red">
+      <div class="hs-label">페널티 전액 부담</div>
+      <div class="hs-val" style="color:var(--red)">−${fw(penTotal)}</div>
+      <div class="hs-sub">손해배상 + 장기지연 + SLA</div>
     </div>
-    <div class="step-arr">→</div>
-    <div class="step-col best">
-      <div class="step-head s3">관리비 지급 후</div>
-      ${sr('월 건수',yCount.toLocaleString()+'건')}
-      ${sr('건당 마진',fw(hqMargin))}
-      ${sr('관리비 지급','-'+fw(yMgmt),'var(--red)')}
-      ${sr(`예상페널티 잔여(${Math.round((1-rate/100)*100)}%)`,'-'+fw(penHqBurden),'var(--red)',true)}
-      <div class="step-row total"><span>월 순손익</span><span class="mono" style="color:${clr(hqAfter)}">${fws(hqAfter)}</span></div>
+    <div class="hero-stat ${loss<0?'red':'amber'}">
+      <div class="hs-label">월 순손익 (현재)</div>
+      <div class="hs-val" style="color:${clr(loss)}">${fws(loss)}</div>
+      <div class="hs-sub">건당 ${Math.round(lossPerUnit).toLocaleString()}원 / 수익 대비 ${marginPct.toFixed(1)}%</div>
     </div>`;
 
-  document.getElementById('perUnitRow').innerHTML=`
-    <div class="metric ${hqDiff>=0?'hi-green':'hi-red'}">
-      <div class="m-label">현재 대비 손익 변화 (월)</div>
-      <div class="m-val" style="color:${clr(hqDiff)}">${fws(hqDiff)}</div>
-      <div class="m-sub">현재 실제 손익 기준</div>
-    </div>
-    <div class="metric">
-      <div class="m-label">건당 손익 변화 환산</div>
-      <div class="m-val" style="color:${clr(hqDiffPerUnit)}">${hqDiffPerUnit>=0?'+':''}${Math.round(hqDiffPerUnit).toLocaleString()}원/건</div>
-      <div class="m-sub">${yCount.toLocaleString()}건 기준</div>
-    </div>`;
+  // 1단계
+  document.getElementById('step1Metrics').innerHTML = [
+    {label:'요기배달 — 허브 건당 수익',val:fw(yHubPerUnit),sub:`선차감 ${fw(yFixed)} + 후차감 ${fw(yRider)}`,cls:'hi-blue'},
+    {label:'C2C — 허브 건당 수익',val:fw(cHubPerUnit),sub:`후차감 ${fw(cRider)} + 관리비환산 ${Math.round(cMgmtUnit).toLocaleString()}원`,cls:'hi-green'},
+    {label:'허브 입장 요기배달 불리',val:gapPct>0?pct(gapPct):'균형',sub:gapPct>0?`C2C 대비 ${pct(gapPct)} 낮음`:'요기배달 우위',cls:gapPct>20?'hi-red':gapPct>0?'hi-amber':'hi-green'},
+  ].map(it=>`<div class="metric ${it.cls}">
+    <div class="m-label">${it.label}</div>
+    <div class="m-val">${it.val}</div>
+    <div class="m-sub">${it.sub}</div>
+  </div>`).join('');
 
-  // ⑤ 핵심 비교
-  const hqNowPerUnit = Math.round(hqNow / Math.max(yCount,1));
-  const hqAfterPerUnit = Math.round(hqAfter / Math.max(yCount,1));
-  document.getElementById('bigCompare').innerHTML=`
+  const step1Msg = gap > 0
+    ? `동일 <strong>${yCount.toLocaleString()}건</strong> 수행 시 허브 수익이 C2C 대비 <strong>월 ${fw(gap)}</strong> 낮습니다.`
+    : `요기배달이 C2C 대비 허브 수익이 높은 구조입니다.`;
+  document.getElementById('step1Banner').style.cssText =
+    `background:${gap>0?'var(--red-bg)':'var(--green-bg)'};border:0.5px solid ${gap>0?'var(--red-dim)':'var(--green-dim)'};color:${gap>0?'var(--red)':'var(--green)'};`;
+  document.getElementById('step1Banner').innerHTML = step1Msg;
+
+  // 2단계
+  const recResult = calcHq(setMgmt);
+  const step2Diff = recResult.hqAfter - hqNow;
+  const mgmtTypeLabel = mgmtType==='per'?'건당':mgmtType==='fixed'?'정액':'SLA 등급제';
+  document.getElementById('step2Compare').innerHTML = `
     <div class="big-card now">
-      <div class="bc-tag now">지금 — 관리비 없음 / 페널티 전액 본사 부담</div>
+      <div class="bc-tag now">관리비 미지급 (현재)</div>
       <div class="bc-val" style="color:${clr(hqNow)}">${fws(hqNow)}</div>
       <div class="bc-sub">
-        <span style="color:var(--text3);font-size:10px;">계산 구조</span><br>
-        마진 +${fw(hqBase)}<br>
+        본사 수익 ${fw(hqRevMonth)}<br>
         페널티 전액 −${fw(penTotal)}<br>
-        <span style="border-top:0.5px solid rgba(255,255,255,0.1);display:block;margin-top:4px;padding-top:4px;">건당 ${hqNowPerUnit.toLocaleString()}원 / ${yCount.toLocaleString()}건</span>
+        <span style="color:var(--text3);">페널티 전액을 본사가 부담하는 구조</span>
       </div>
     </div>
     <div class="big-card after">
-      <div class="bc-tag after">관리비 지급 후 — 페널티 ${penReduce}% 감소 + ${rate}% 허브 부과</div>
-      <div class="bc-val" style="color:${clr(hqAfter)}">${fws(hqAfter)}</div>
+      <div class="bc-tag after">관리비 ${fw(setMgmt)} 지급 시 (${mgmtTypeLabel})</div>
+      <div class="bc-val" style="color:${clr(recResult.hqAfter)}">${fws(recResult.hqAfter)}</div>
       <div class="bc-sub">
-        <span style="color:var(--text3);font-size:10px;">계산 구조</span><br>
-        마진 +${fw(hqBase)}<br>
-        관리비 −${fw(yMgmt)} (허브 차감 후 실지급 ${fw(actualMgmt)})<br>
-        잔여페널티 본사부담 −${fw(penHqBurden)}<br>
-        <span style="border-top:0.5px solid rgba(255,255,255,0.1);display:block;margin-top:4px;padding-top:4px;">건당 ${hqAfterPerUnit.toLocaleString()}원 / ${yCount.toLocaleString()}건</span>
+        본사 수익 ${fw(hqRevMonth)}<br>
+        관리비 −${fw(setMgmt)} (실지급 ${fw(recResult.actual)})<br>
+        예상페널티 ${fw(penExpected)} 중 잔여 −${fw(penExpected-recResult.ded)}
       </div>
     </div>`;
 
-  const isPos=hqDiff>=0;
-  document.getElementById('diffBanner').style.cssText=
+  const isPos = step2Diff >= 0;
+  document.getElementById('step2Banner').style.cssText =
     `background:${isPos?'var(--green-bg)':'var(--red-bg)'};border:0.5px solid ${isPos?'var(--green-dim)':'var(--red-dim)'};color:${isPos?'var(--green)':'var(--red)'};`;
-  document.getElementById('diffBanner').innerHTML=
-    isPos
-    ? `관리비 지급 시 현재 대비 월 <strong>${fw(hqDiff)}</strong> 유리합니다. 페널티 감소(${penReduce}%) + 부과율(${rate}%) 효과가 관리비 비용을 상회합니다.`
-    : `관리비 지급 시 현재 대비 월 <strong>${fw(-hqDiff)}</strong> 불리합니다. 페널티 감소율 또는 부과율을 조정해보세요.`;
+  document.getElementById('step2Banner').innerHTML = isPos
+    ? `설정 관리비 지급 시 현재 대비 월 <strong>${fw(step2Diff)} 개선</strong>됩니다. 페널티 ${penReduce}% 감소 + ${rate}% 부과 효과.`
+    : `설정 관리비 지급 시 현재 대비 월 <strong>${fw(-step2Diff)} 불리</strong>합니다. 관리비 하향, 감소율 재예측 또는 부과율 상향 필요.`;
 
-  // ⑥ ROI
-  document.getElementById('roiMetrics').innerHTML=[
-    {label:'실지급 관리비 (투자액)',val:fw(roiCost),sub:`관리비 ${fw(yMgmt)} - 차감 ${fw(penDeduct)}`,cls:''},
-    {label:'페널티 절감액 (이익)',val:fw(roiSavePen),sub:`${penReduce}% 감소 기준`,cls:roiSavePen>=roiCost?'hi-green':'hi-amber'},
+  // 3단계
+  const be = calcHq(mgmtBreakEven);
+  const rec = calcHq(mgmtRecovery);
+  const gap2 = calcHq(mgmtGap);
+  const setResult = calcHq(setMgmt);
+
+  document.getElementById('mgmtCards').innerHTML = `
+    <div class="mgmt-card primary">
+      <div class="mgmt-head">
+        <div class="mgmt-tag">현재 설정 (${mgmtTypeLabel})</div>
+        <div class="mgmt-head-title">${mgmtDesc}</div>
+      </div>
+      <div class="mgmt-body">
+        <div class="mgmt-val">${fw(setMgmt)}</div>
+        <div class="mgmt-line"><span>건당 환산</span><span>${Math.round(setMgmt/Math.max(yCount,1)).toLocaleString()}원</span></div>
+        <div class="mgmt-line"><span>본사 손익</span><span style="color:${clr(setResult.hqAfter)}">${fws(setResult.hqAfter)}</span></div>
+        <div class="mgmt-line"><span>허브 실수취</span><span style="color:${clr(setResult.hubGet)}">${fw(setResult.hubGet)}</span></div>
+      </div>
+    </div>
+    <div class="mgmt-card">
+      <div class="mgmt-head">
+        <div class="mgmt-tag">손익분기 (상한)</div>
+        <div class="mgmt-head-title">손해 안 나는 최대 관리비</div>
+      </div>
+      <div class="mgmt-body">
+        <div class="mgmt-val">${fw(mgmtBreakEven)}</div>
+        <div class="mgmt-line"><span>대비</span><span style="color:${setMgmt<=mgmtBreakEven?'var(--green)':'var(--red)'}">${setMgmt<=mgmtBreakEven?'설정값 OK':'설정 초과'}</span></div>
+        <div class="mgmt-line"><span>본사 손익</span><span style="color:${clr(be.hqAfter)}">${fws(be.hqAfter)}</span></div>
+        <div class="mgmt-line"><span>허브 실수취</span><span>${fw(be.hubGet)}</span></div>
+      </div>
+    </div>
+    <div class="mgmt-card">
+      <div class="mgmt-head">
+        <div class="mgmt-tag">투자회수 기준</div>
+        <div class="mgmt-head-title">페널티 절감액 100% 회수</div>
+      </div>
+      <div class="mgmt-body">
+        <div class="mgmt-val">${fw(mgmtRecovery)}</div>
+        <div class="mgmt-line"><span>기준</span><span>절감 = 실지급</span></div>
+        <div class="mgmt-line"><span>본사 손익</span><span style="color:${clr(rec.hqAfter)}">${fws(rec.hqAfter)}</span></div>
+        <div class="mgmt-line"><span>허브 실수취</span><span>${fw(rec.hubGet)}</span></div>
+      </div>
+    </div>`;
+        <div class="mgmt-line"><span>본사 손익</span><span style="color:${clr(rec.hqAfter)}">${fws(rec.hqAfter)}</span></div>
+        <div class="mgmt-line"><span>허브 실수취</span><span>${fw(rec.hubGet)}</span></div>
+      </div>
+    </div>`;
+
+  // 4단계
+  const simMax = Math.max(mgmtBreakEven, mgmtRecovery, mgmtGap, 500000) * 1.3;
+  const simSliderEl = document.getElementById('simSlider');
+  simSliderEl.max = Math.round(simMax/10000)*10000;
+  if(simMgmt > simSliderEl.max) simMgmt = parseInt(simSliderEl.max);
+  simSliderEl.value = simMgmt;
+  document.getElementById('simMid').textContent = fw(simMax/2);
+  document.getElementById('simMax').textContent = fw(simMax);
+
+  // 5단계 ROI
+  const cur = calcHq(setMgmt);
+  const roiCost = cur.actual;
+  const roiGain = penSave;
+  const roiNet  = roiGain - roiCost;
+  const roiPct  = Math.abs(roiCost) > 0 ? roiNet / Math.abs(roiCost) * 100 : 0;
+
+  document.getElementById('roiTop').innerHTML = [
+    {label:'실지급 관리비 (투자)',val:fw(roiCost),sub:`설정 ${fw(setMgmt)} - 차감 ${fw(cur.ded)}`,cls:''},
+    {label:'순 효과',val:fws(roiNet),sub:`ROI ${roiPct>=0?'+':''}${roiPct.toFixed(1)}%`,cls:roiNet>=0?'hi-green':'hi-red'},
   ].map(it=>`<div class="metric ${it.cls}">
     <div class="m-label">${it.label}</div>
     <div class="m-val">${it.val}</div>
     <div class="m-sub">${it.sub}</div>
   </div>`).join('');
 
-  const beValid = breakEvenRate>=0 && breakEvenRate<=100;
-  document.getElementById('roiRows').innerHTML=`
+  document.getElementById('roiList').innerHTML = `
     <div class="roi-row">
       <div>
-        <div style="color:var(--text);">실지급 관리비</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px;">관리비 ${fw(yMgmt)}에서 페널티 차감액 ${fw(penDeduct)}를 뺀 본사 실제 지출액</div>
+        <div class="roi-label-main">실지급 관리비</div>
+        <div class="roi-label-desc">설정 관리비에서 페널티 차감액을 뺀 본사 실제 지출</div>
       </div>
-      <span class="mono" style="color:var(--red);white-space:nowrap;padding-left:12px;">-${fw(roiCost)}</span>
+      <span class="roi-val" style="color:var(--red)">-${fw(roiCost)}</span>
     </div>
     <div class="roi-row">
       <div>
-        <div style="color:var(--text);">페널티 절감액</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px;">관리비 지급으로 줄어드는 페널티 금액 (현재 ${fw(penTotal)} → 예상 ${fw(penExpected)})</div>
+        <div class="roi-label-main">페널티 절감액</div>
+        <div class="roi-label-desc">관리비 지급으로 줄어드는 페널티 (현재 ${fw(penTotal)} → 예상 ${fw(penExpected)})</div>
       </div>
-      <span class="mono" style="color:var(--green);white-space:nowrap;padding-left:12px;">+${fw(roiSavePen)}</span>
+      <span class="roi-val" style="color:var(--green)">+${fw(roiGain)}</span>
     </div>
     <div class="roi-row">
       <div>
-        <div style="color:var(--text);">순 효과</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px;">페널티 절감액 - 실지급 관리비 = 관리비 투자 후 실제 이득/손해</div>
+        <div class="roi-label-main">순 효과</div>
+        <div class="roi-label-desc">절감액 - 실지급 = 관리비 투자 후 실제 이득</div>
       </div>
-      <span class="mono" style="color:${clr(roiNet)};white-space:nowrap;padding-left:12px;">${fws(roiNet)}</span>
+      <span class="roi-val" style="color:${clr(roiNet)}">${fws(roiNet)}</span>
     </div>
     <div class="roi-row">
       <div>
-        <div style="color:var(--text);">ROI</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px;">실지급 관리비 대비 순효과 비율. 100% 이상이면 투자 대비 이득</div>
+        <div class="roi-label-main">ROI (투자 수익률)</div>
+        <div class="roi-label-desc">실지급 관리비 대비 순효과 비율</div>
       </div>
-      <span class="mono" style="color:${clr(roiNet)};white-space:nowrap;padding-left:12px;">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span>
-    </div>
-    <div class="roi-row">
-      <div>
-        <div style="color:var(--text);">손익분기 부과율</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px;">이 부과율로 설정하면 관리비 지급 전후 본사 손익이 동일해지는 기준점</div>
-      </div>
-      <span class="mono" style="color:var(--amber);white-space:nowrap;padding-left:12px;">${beValid?pct(breakEvenRate):'계산 불가'}</span>
-    </div>
-    <div style="padding:10px 0 2px;font-size:11px;color:var(--text3);line-height:1.7;border-top:0.5px solid var(--border);margin-top:2px;">
-      ${beValid
-        ? `예상 페널티의 <strong style="color:var(--amber)">${pct(breakEvenRate)}</strong>를 부과하면 현재와 손익이 동일해집니다. 현재 설정(${rate}%)은 손익분기보다 <span style="color:${rate>=breakEvenRate?'var(--green)':'var(--red)'};">${rate>=breakEvenRate?'유리 — 관리비 줘도 이득':'불리 — 페널티 감소율을 높이거나 부과율을 올려야 함'}</span>합니다.`
-        : '현재 조건에서 손익분기 부과율을 산출할 수 없습니다.'
-      }
+      <span class="roi-val" style="color:${clr(roiNet)}">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span>
     </div>`;
 
-  window._S={yCount,yFixed,yRider,cMgmt,cDaily,cRider,yMgmt,hqMargin,
-    salePerUnit,buyPerUnit,avgDist,extraSteps,mgmtType,
-    penProd,penDelay,penSla,penTotal,penReduce,penExpected,rate,
-    yHubRev,cHubRev,gap,yPerUnit,cPerUnit,imbalancePct,
-    penDeduct,actualMgmt,penHqBurden,
-    hqBase,hqNow,hqAfter,hqDiff,hqDiffPerUnit,
-    roiSavePen,roiCost,roiNet,roiPct,breakEvenRate};
+  window._S={yCount,yFixed,yRider,cMgmt,cDaily,cRider,hqMargin,cHqRev,
+    mgmtType,mgmtTypeLabel,setMgmt,mgmtDesc,
+    penProd,penDelay,penSla,penTotal,penReduce,penExpected,penSave,rate,
+    yHubPerUnit,cHubPerUnit,yHubRev,cHubRev,gap,gapPct,
+    hqRevMonth,hqNow,mgmtBreakEven,mgmtRecovery,mgmtGap,
+    recResult,cur,roiCost,roiGain,roiNet,roiPct};
+
+  renderSim();
+}
+
+function renderSim(){
+  const s = window._S; if(!s) return;
+  const ded = s.penExpected * s.rate / 100;
+  const actual = simMgmt - ded;
+  const hqAfter = s.hqRevMonth - simMgmt - (s.penExpected - ded);
+  const hubGet = simMgmt - ded;
+  const diffFromNow = hqAfter - s.hqNow;
+
+  document.getElementById('simVal').textContent = fw(simMgmt);
+  document.getElementById('simSub').textContent = `건당 환산 ${Math.round(simMgmt/Math.max(s.yCount,1)).toLocaleString()}원`;
+  document.getElementById('simHq').textContent = fws(hqAfter);
+  document.getElementById('simHq').style.color = clr(hqAfter);
+  document.getElementById('simHqSub').textContent = `현재 대비 ${diffFromNow>=0?'+':''}${Math.round(diffFromNow).toLocaleString()}원`;
+
+  document.getElementById('simResults').innerHTML = [
+    {label:'실지급 관리비',val:fws(actual),sub:`차감 ${fw(ded)}`,cls:actual>=0?'':'hi-red'},
+    {label:'허브 실수취',val:fws(hubGet),sub:hubGet<0?'허브 추가 납부':'허브 수익',cls:hubGet>=0?'hi-green':'hi-red'},
+    {label:'본사 월 손익',val:fws(hqAfter),sub:'관리비 지급 후',cls:hqAfter>=0?'hi-green':'hi-red'},
+    {label:'현재 대비',val:fws(diffFromNow),sub:diffFromNow>=0?'개선':'악화',cls:diffFromNow>=0?'hi-green':'hi-red'},
+  ].map(it=>`<div class="metric ${it.cls}">
+    <div class="m-label">${it.label}</div>
+    <div class="m-val" style="font-size:14px;">${it.val}</div>
+    <div class="m-sub">${it.sub}</div>
+  </div>`).join('');
 }
 
 async function runAI(){
-  const s=window._S; if(!s) return;
-  const btn=document.getElementById('aiBtn');
-  const body=document.getElementById('aiBody');
-  btn.disabled=true; btn.textContent='분석 중...';
-  body.innerHTML='<span class="ai-ph">분석 중입니다...</span>';
-  const f=v=>Math.round(v).toLocaleString('ko-KR')+'원';
-  const prompt=`당신은 라스트마일 물류 운영 전문 컨설턴트입니다. 경영진에게 허브 관리비 지급을 설득하기 위한 분석 보고서를 작성합니다.
+  const s = window._S; if(!s) return;
+  const btn = document.getElementById('aiBtn');
+  const body = document.getElementById('aiBody');
+  btn.disabled = true; btn.textContent = '분석 중...';
+  body.innerHTML = '<span class="ai-ph">분석 중입니다...</span>';
+  const f = v => Math.round(v).toLocaleString('ko-KR')+'원';
 
-[본사 단가 구조 — 평균 ${s.avgDist}km 기준]
-- 매출: 기본 ${f(s.saleBase||0)} + ${s.extraSteps}구간 × ${f(s.saleExtra||0)} = 건당 ${f(s.salePerUnit)}
-- 매입: 기본 ${f(s.buyBase||0)} + ${s.extraSteps}구간 × ${f(s.buyExtra||0)} = 건당 ${f(s.buyPerUnit)}
-- 건당 마진: ${f(s.hqMargin)} / 관리비 형태: ${s.mgmtType==='per'?'건당':'정액'} (월 ${f(s.yMgmt)})
+  const prompt = `당신은 라스트마일 물류 운영 컨설턴트입니다. 아래 허브 지역의 손익 데이터를 분석해주세요.
 
-[채널 수익 비교 — 동일 ${s.yCount.toLocaleString()}건 기준]
-- 요기배달 허브 월 수익: ${f(s.yHubRev)} (건당 ${f(s.yPerUnit)})
-- C2C 허브 월 수익: ${f(s.cHubRev)} (건당 ${f(s.cPerUnit)})
-- 갭: C2C 대비 ${f(s.gap)} 불리 / 채널 불균형 ${s.imbalancePct.toFixed(1)}%
+[현황]
+- 월 배달건수: ${s.yCount.toLocaleString()}건
+- 본사 월 수익: ${f(s.hqRevMonth)} (건당 마진 ${f(s.hqMargin)} + C2C ${f(s.cHqRev)})
+- 페널티 합산: 손해배상 ${f(s.penProd)} + 장기지연 ${f(s.penDelay)} + SLA ${f(s.penSla)} = ${f(s.penTotal)}
+- 현재 월 순손익: ${f(s.hqNow)} ${s.hqNow<0?'(손해)':''}
 
-[페널티 현황]
-- 현재: 상품보상 ${f(s.penProd)} + 장기지연 ${f(s.penDelay)} + SLA ${f(s.penSla)} = ${f(s.penTotal)}/월
-- 관리비 지급 시 예상 감소율: ${s.penReduce}% → 예상 페널티 ${f(s.penExpected)}
-- 적용 부과율: ${s.rate}% → 허브 차감 ${f(s.penDeduct)} → 실지급 관리비 ${f(s.actualMgmt)}
+[허브 관점]
+- 요기배달 건당 허브 수익: ${f(s.yHubPerUnit)}
+- C2C 건당 허브 수익: ${f(s.cHubPerUnit)}
+- 허브 입장 요기배달 불리도: ${s.gapPct.toFixed(1)}%
+- 동일건수 월 갭: ${f(s.gap)}
 
-[본사 손익 비교 — 월]
-- 기존 마진 (페널티 전): ${f(s.hqBase)}
-- 현재 실제 (페널티 전액): ${f(s.hqNow)}
-- 관리비 지급 후: ${f(s.hqAfter)}
-- 손익 변화: ${s.hqDiff>=0?'+':''}${f(s.hqDiff)} / 건당 ${s.hqDiffPerUnit>=0?'+':''}${Math.round(s.hqDiffPerUnit).toLocaleString()}원
+[관리비 효과 가정]
+- 페널티 예상 감소율: ${s.penReduce}%
+- 페널티 절감액: ${f(s.penSave)}
+- 페널티 부과율: ${s.rate}%
 
-[ROI]
-- 실지급 관리비 (투자): ${f(s.roiCost)}
-- 페널티 절감 (이익): ${f(s.roiSavePen)}
-- 순효과: ${s.roiNet>=0?'+':''}${f(s.roiNet)} / ROI: ${s.roiPct.toFixed(1)}%
-- 손익분기 부과율: ${s.breakEvenRate.toFixed(1)}%
+[관리비 3가지 기준 (참고)]
+- 손익분기 관리비 (최대치): ${f(s.mgmtBreakEven)}
+- 페널티 보전 관리비 (투자회수): ${f(s.mgmtRecovery)}
+- 갭 보전 관리비 (형평성): ${f(s.mgmtGap)}
 
-경영진 설득용으로 다음 구조로 작성해주세요:
+[현재 설정 관리비]
+- 형태: ${s.mgmtTypeLabel}
+- 계산식: ${s.mgmtDesc}
+- 월 관리비: ${f(s.setMgmt)}
 
-1. 핵심 문제 — 허브가 요기배달을 소홀히 수행하는 구조적 이유 (수치 인용)
-2. 관리비 지급 근거 — 채널 불균형과 갭 기반 논리
-3. 페널티 감소율 ${s.penReduce}% 가정의 타당성 — 이 수치가 현실적인지 판단
-4. 부과율 ${s.rate}% 적절성 — 손익분기(${s.breakEvenRate.toFixed(1)}%) 대비
-5. 경영진 설득 핵심 메시지 — 관리비가 비용이 아닌 투자인 이유
-6. 즉시 실행 액션 2~3가지
+[설정 관리비 적용 시]
+- 실지급 관리비: ${f(s.roiCost)}
+- 페널티 절감액: ${f(s.roiGain)}
+- 순 효과: ${s.roiNet>=0?'+':''}${f(s.roiNet)}
+- ROI: ${s.roiPct.toFixed(1)}%
+- 본사 월 손익: ${f(s.recResult.hqAfter)} (현재 대비 ${(s.recResult.hqAfter-s.hqNow)>=0?'+':''}${f(s.recResult.hqAfter-s.hqNow)})
 
-한국어, 실무 어조로 간결하게.`;
+다음 구조로 분석 요약을 작성하세요:
+
+1. 현황 진단 — 손익 구조의 핵심 포인트 (1~2문장)
+2. 허브 관점 분석 — 요기배달 수행 동기 구조
+3. 관리비 효과 — 지급 시 본사/허브 영향
+4. 설정 관리비 ${f(s.setMgmt)} (${s.mgmtTypeLabel}) 평가 — 3가지 기준 대비 적절성
+5. 리스크 / 고려사항 2~3개
+6. 실행 권고 2~3가지
+
+한국어, 실무 보고용 간결한 문체. 각 항목 2~4줄 내외.`;
 
   try{
-    const res=await fetch('/api/analyze',{
+    const res = await fetch('/api/analyze',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({prompt})
     });
-    const data=await res.json();
-    body.textContent=data.result||'응답 없음';
-  }catch(e){body.textContent='오류: '+e.message;}
-  btn.disabled=false; btn.textContent='다시 분석 ↗';
+    const data = await res.json();
+    body.textContent = data.result || '응답 없음';
+  }catch(e){body.textContent = '오류: '+e.message;}
+  btn.disabled = false; btn.textContent = '다시 분석 ↗';
 }
 
 calc();
