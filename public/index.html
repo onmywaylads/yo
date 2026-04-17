@@ -181,20 +181,57 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 
   <!-- 이 지역 관리비 -->
   <div class="sec">
-    <div class="sec-title amber">이 지역 적용 관리비</div>
-    <div class="field">
-      <div class="fl">본사 → 허브 관리비 (월, 원)</div>
-      <input type="number" id="y_mgmt" value="300000" step="50000" oninput="calc()"/>
+    <div class="sec-title amber">이 지역 적용 관리비 (본사→허브)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+      <div class="rate-btn active" id="mgmt_per_btn" onclick="setMgmtType('per')">건당 관리비</div>
+      <div class="rate-btn" id="mgmt_fix_btn" onclick="setMgmtType('fixed')">정액 관리비</div>
     </div>
-    <div style="font-size:11px;color:var(--text3);margin-top:2px;line-height:1.6;" id="mgmt_ref_txt"></div>
+    <div id="mgmt_per_wrap">
+      <div class="fl">건당 관리비 (원)</div>
+      <input type="number" id="y_mgmt_per" value="400" step="50" oninput="calc()"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">월 관리비: <span id="mgmt_per_total" class="mono" style="color:var(--amber);">—</span></div>
+    </div>
+    <div id="mgmt_fix_wrap" style="display:none;">
+      <div class="fl">월 관리비 (원)</div>
+      <input type="number" id="y_mgmt_fix" value="300000" step="50000" oninput="calc()"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">건당 환산: <span id="mgmt_fix_per" class="mono" style="color:var(--amber);">—</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.6;" id="mgmt_ref_txt"></div>
   </div>
 
-  <!-- 본사 마진 -->
+  <!-- 본사 매출/매입 -->
   <div class="sec">
-    <div class="sec-title">본사 기준</div>
-    <div class="field">
-      <div class="fl">건당 본사 마진 (원)</div>
-      <input type="number" id="hq_margin" value="500" step="50" oninput="calc()"/>
+    <div class="sec-title">본사 매출 / 매입 단가</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">1.5km 기본 + 100m당 추가 구조</div>
+    <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:5px;">매출 (본사 수취)</div>
+    <div class="field-row">
+      <div>
+        <div class="fl">1.5km 기본요금 (원)</div>
+        <input type="number" id="sale_base" value="3500" step="100" oninput="calc()"/>
+      </div>
+      <div>
+        <div class="fl">100m당 추가요금 (원)</div>
+        <input type="number" id="sale_extra" value="100" step="10" oninput="calc()"/>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:600;color:var(--red);margin-bottom:5px;margin-top:4px;">매입 (라이더 지급)</div>
+    <div class="field-row">
+      <div>
+        <div class="fl">1.5km 기본요금 (원)</div>
+        <input type="number" id="buy_base" value="3000" step="100" oninput="calc()"/>
+      </div>
+      <div>
+        <div class="fl">100m당 추가요금 (원)</div>
+        <input type="number" id="buy_extra" value="80" step="10" oninput="calc()"/>
+      </div>
+    </div>
+    <div class="field" style="margin-top:4px;">
+      <div class="fl">평균 배달거리 (km)</div>
+      <input type="number" id="avg_dist" value="2.0" step="0.1" min="1.5" oninput="calc()"/>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--blue-bg);border:0.5px solid var(--blue-dim);border-radius:var(--radius);margin-top:2px;">
+      <span style="font-size:11px;color:var(--text2);">건당 본사 마진 (자동계산)</span>
+      <span class="mono" style="font-size:13px;color:var(--blue);font-weight:500;" id="hq_margin_txt">—</span>
     </div>
   </div>
 
@@ -313,6 +350,16 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 
 <script>
 let selectedRate=20;
+let mgmtType='per'; // 'per' = 건당, 'fixed' = 정액
+
+function setMgmtType(t){
+  mgmtType=t;
+  document.getElementById('mgmt_per_btn').classList.toggle('active', t==='per');
+  document.getElementById('mgmt_fix_btn').classList.toggle('active', t==='fixed');
+  document.getElementById('mgmt_per_wrap').style.display = t==='per'?'block':'none';
+  document.getElementById('mgmt_fix_wrap').style.display = t==='fixed'?'block':'none';
+  calc();
+}
 function setRate(r){
   selectedRate=r;
   document.querySelectorAll('.rate-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.rate)===r));
@@ -337,8 +384,34 @@ function calc(){
   const cMgmt    = n('c_mgmt');
   const cDaily   = n('c_daily')||1;
   const cRider   = n('c_rider');
-  const yMgmt    = n('y_mgmt');
-  const hqMargin = n('hq_margin');
+
+  // ── 매출/매입 거리 계산
+  const saleBase  = n('sale_base');
+  const saleExtra = n('sale_extra');
+  const buyBase   = n('buy_base');
+  const buyExtra  = n('buy_extra');
+  const avgDist   = n('avg_dist') || 1.5;
+  const extraSteps = Math.max(0, Math.round((avgDist - 1.5) / 0.1));
+  const salePerUnit = saleBase + saleExtra * extraSteps;
+  const buyPerUnit  = buyBase  + buyExtra  * extraSteps;
+  const hqMargin    = salePerUnit - buyPerUnit;
+
+  // 자동계산 표시
+  document.getElementById('hq_margin_txt').textContent =
+    `${hqMargin.toLocaleString()}원 (매출 ${salePerUnit.toLocaleString()} - 매입 ${buyPerUnit.toLocaleString()})`;
+
+  // ── 관리비 계산
+  let yMgmt;
+  if(mgmtType === 'per'){
+    const perUnit = n('y_mgmt_per');
+    yMgmt = perUnit * yCount;
+    document.getElementById('mgmt_per_total').textContent = yMgmt.toLocaleString()+'원';
+  } else {
+    yMgmt = n('y_mgmt_fix');
+    const perUnit = yCount > 0 ? yMgmt / yCount : 0;
+    document.getElementById('mgmt_fix_per').textContent = Math.round(perUnit).toLocaleString()+'원/건';
+  }
+
   const penProd  = n('pen_product');
   const penDelay = n('pen_delay');
   const penSla   = n('pen_sla');
@@ -575,6 +648,7 @@ function calc(){
     </div>`;
 
   window._S={yCount,yFixed,yRider,cMgmt,cDaily,cRider,yMgmt,hqMargin,
+    salePerUnit,buyPerUnit,avgDist,extraSteps,mgmtType,
     penProd,penDelay,penSla,penTotal,penReduce,penExpected,rate,
     yHubRev,cHubRev,gap,yPerUnit,cPerUnit,imbalancePct,
     penDeduct,actualMgmt,penHqBurden,
@@ -590,6 +664,11 @@ async function runAI(){
   body.innerHTML='<span class="ai-ph">분석 중입니다...</span>';
   const f=v=>Math.round(v).toLocaleString('ko-KR')+'원';
   const prompt=`당신은 라스트마일 물류 운영 전문 컨설턴트입니다. 경영진에게 허브 관리비 지급을 설득하기 위한 분석 보고서를 작성합니다.
+
+[본사 단가 구조 — 평균 ${s.avgDist}km 기준]
+- 매출: 기본 ${f(s.saleBase||0)} + ${s.extraSteps}구간 × ${f(s.saleExtra||0)} = 건당 ${f(s.salePerUnit)}
+- 매입: 기본 ${f(s.buyBase||0)} + ${s.extraSteps}구간 × ${f(s.buyExtra||0)} = 건당 ${f(s.buyPerUnit)}
+- 건당 마진: ${f(s.hqMargin)} / 관리비 형태: ${s.mgmtType==='per'?'건당':'정액'} (월 ${f(s.yMgmt)})
 
 [채널 수익 비교 — 동일 ${s.yCount.toLocaleString()}건 기준]
 - 요기배달 허브 월 수익: ${f(s.yHubRev)} (건당 ${f(s.yPerUnit)})
