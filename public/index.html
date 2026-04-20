@@ -254,7 +254,7 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 
   <!-- 페널티 효과 예측 -->
   <div class="sec">
-    <div class="sec-title amber">페널티 효과 예측</div>
+    <div class="sec-title amber">관리비 지급 후 예측</div>
     <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:12px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
         <span style="font-size:11px;color:var(--text2);">페널티 예상 감소율</span>
@@ -309,27 +309,9 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
   </div>
 
   <div class="step-block">
-    <div class="step-num"><span class="step-badge a">4</span><span class="step-title">관리비 시뮬레이션</span></div>
-    <div class="step-lead">슬라이더로 관리비 금액을 조정하며 본사 손익·허브 실수취액 변화를 확인합니다.</div>
-    <div class="sim-wrap">
-      <div class="sim-head">
-        <div>
-          <div class="sim-label">월 관리비</div>
-          <div class="sim-val mono" id="simVal">0원</div>
-          <div class="sim-sub" id="simSub">건당 환산 0원</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="sim-label">본사 월 손익</div>
-          <div class="sim-val mono" id="simHq">—</div>
-          <div class="sim-sub" id="simHqSub">관리비 지급 후</div>
-        </div>
-      </div>
-      <input type="range" id="simSlider" class="sim-slider" min="0" max="2000000" step="10000" value="300000" oninput="onSimSlider()"/>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:14px;">
-        <span>0원</span><span id="simMid">100만원</span><span id="simMax">200만원</span>
-      </div>
-      <div class="sim-results" id="simResults"></div>
-    </div>
+    <div class="step-num"><span class="step-badge a">4</span><span class="step-title">핵심 인사이트</span></div>
+    <div class="step-lead">입력한 조건 기준 주요 판단 포인트입니다.</div>
+    <div id="insightBox"></div>
   </div>
 
   <div class="step-block">
@@ -354,7 +336,6 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
 
 <script>
 let selectedRate = 10;
-let simMgmt = 300000;
 let mgmtType = 'per';
 let slaGrade = 'ab';
 
@@ -389,11 +370,6 @@ function onSlider() {
   calc();
 }
 
-function onSimSlider() {
-  simMgmt = parseInt(document.getElementById('simSlider').value);
-  renderSim();
-}
-
 function n(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
 function fw(v) { return Math.round(Math.abs(v)).toLocaleString('ko-KR') + '원'; }
 function fws(v) { return (v >= 0 ? '+' : '-') + Math.round(Math.abs(v)).toLocaleString('ko-KR') + '원'; }
@@ -407,7 +383,7 @@ function calc() {
   const cMgmt    = n('c_mgmt');
   const cDaily   = n('c_daily') || 1;
   const cRider   = n('c_rider');
-  const hqMargin = n('hq_margin');
+  const hqMargin = n('hq_margin');  // 고정
   const penProd  = n('pen_product');
   const penDelay = n('pen_delay');
   const penSla   = n('pen_sla');
@@ -583,14 +559,81 @@ function calc() {
       </div>
     </div>`;
 
-  // 4단계 슬라이더 max
-  const simMax = Math.max(mgmtBreakEven, mgmtRecovery, mgmtGap, setMgmt, 500000) * 1.3;
-  const simSliderEl = document.getElementById('simSlider');
-  simSliderEl.max = Math.round(simMax / 10000) * 10000;
-  if (simMgmt > simSliderEl.max) simMgmt = parseInt(simSliderEl.max);
-  simSliderEl.value = simMgmt;
-  document.getElementById('simMid').textContent = fw(simMax / 2);
-  document.getElementById('simMax').textContent = fw(simMax);
+  // 4단계 인사이트 박스
+  const insights = [];
+
+  // 인사이트 1: 갭 vs 관리비 충분성
+  if (gap > setMgmt) {
+    insights.push({
+      icon: '⚠',
+      color: 'red',
+      title: '관리비가 C2C 갭보다 작음',
+      desc: `C2C 대비 월 갭은 ${fw(gap)}인데 설정 관리비는 ${fw(setMgmt)}입니다. 허브 입장 요기배달 수행 동기가 여전히 부족할 수 있습니다.`
+    });
+  } else if (setMgmt > 0) {
+    insights.push({
+      icon: '✓',
+      color: 'green',
+      title: '관리비가 C2C 갭을 보전',
+      desc: `관리비 ${fw(setMgmt)}로 C2C 갭 ${fw(gap)}을 ${gap>0?'충분히 ':'완전히 '}커버합니다.`
+    });
+  }
+
+  // 인사이트 2: 페널티 감소 효과 vs 투자
+  if (penSave > setResult.actual) {
+    insights.push({
+      icon: '✓',
+      color: 'green',
+      title: '페널티 절감 > 관리비 투자',
+      desc: `예상 절감액 ${fw(penSave)}가 실지급 관리비 ${fw(setResult.actual)}보다 큽니다. ROI ${roiPctPreview(penSave, setResult.actual)}%로 투자 가치 있습니다.`
+    });
+  } else {
+    insights.push({
+      icon: '⚠',
+      color: 'amber',
+      title: '페널티 절감 < 관리비 투자',
+      desc: `예상 절감액 ${fw(penSave)}보다 실지급 관리비 ${fw(setResult.actual)}가 큽니다. 감소율(${penReduce}%) 재검토 또는 부과율 상향을 고려하세요.`
+    });
+  }
+
+  // 인사이트 3: 손익 개선 여부
+  const step2Diff_ = setResult.hqAfter - hqNow;
+  if (step2Diff_ >= 0) {
+    insights.push({
+      icon: '✓',
+      color: 'green',
+      title: '본사 월 손익 개선',
+      desc: `관리비 지급 후 본사 월 손익이 ${fw(step2Diff_)} 개선됩니다. 건당 ${Math.round(step2Diff_/Math.max(yCount,1)).toLocaleString()}원 효과.`
+    });
+  } else {
+    insights.push({
+      icon: '⚠',
+      color: 'red',
+      title: '본사 월 손익 악화',
+      desc: `관리비 지급 시 본사 월 손익이 ${fw(-step2Diff_)} 악화됩니다. 관리비 하향 또는 페널티 감소율 재예측이 필요합니다.`
+    });
+  }
+
+  // 인사이트 4: 권장 관리비와 비교
+  const idealMgmt = Math.min(
+    ...[mgmtBreakEven, mgmtRecovery, mgmtGap].filter(v => v > 0)
+  ) || 0;
+  if (idealMgmt > 0 && Math.abs(setMgmt - idealMgmt) > 50000) {
+    const dir = setMgmt > idealMgmt ? '높음' : '낮음';
+    insights.push({
+      icon: 'ℹ',
+      color: 'amber',
+      title: `권장 대비 관리비 ${dir}`,
+      desc: `3가지 기준 중 최소값(${fw(idealMgmt)}) 대비 설정 관리비가 ${fw(Math.abs(setMgmt-idealMgmt))} ${dir}습니다.`
+    });
+  }
+
+  document.getElementById('insightBox').innerHTML = insights.map(ins => `
+    <div style="background:var(--bg3);border:0.5px solid var(--border);border-left:3px solid var(--${ins.color==='red'?'red':ins.color==='green'?'green':ins.color==='amber'?'amber':'blue'});border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:4px;color:var(--${ins.color==='red'?'red':ins.color==='green'?'green':ins.color==='amber'?'amber':'blue'});">${ins.icon} ${ins.title}</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;">${ins.desc}</div>
+    </div>
+  `).join('');
 
   // 5단계 ROI
   const roiCost = setResult.actual;
@@ -621,35 +664,17 @@ function calc() {
       <span class="roi-val" style="color:${clr(roiNet)}">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span>
     </div>`;
 
-  window._S = { yCount, hqMargin, penProd, penDelay, penSla, penTotal, penReduce, penExpected, penSave, rate,
+  window._S = { yCount, hqMargin,
+    penProd, penDelay, penSla, penTotal, penReduce, penExpected, penSave, rate,
     yHubPerUnit, cHubPerUnit, yHubRev, cHubRev, gap, gapPct,
     hqRevMonth, hqNow, setMgmt, mgmtDesc, mgmtTypeLabel,
     mgmtBreakEven, mgmtRecovery, mgmtGap, setResult,
     roiCost, roiGain, roiNet, roiPct };
-
-  renderSim();
 }
 
-function renderSim() {
-  const s = window._S; if (!s) return;
-  const ded = s.penExpected * s.rate / 100;
-  const actual = simMgmt - ded;
-  const hqAfter = s.hqRevMonth - simMgmt - (s.penExpected - ded);
-  const hubGet = simMgmt - ded;
-  const diff = hqAfter - s.hqNow;
-
-  document.getElementById('simVal').textContent = fw(simMgmt);
-  document.getElementById('simSub').textContent = `건당 환산 ${Math.round(simMgmt/Math.max(s.yCount,1)).toLocaleString()}원`;
-  document.getElementById('simHq').textContent = fws(hqAfter);
-  document.getElementById('simHq').style.color = clr(hqAfter);
-  document.getElementById('simHqSub').textContent = `현재 대비 ${diff>=0?'+':''}${Math.round(diff).toLocaleString()}원`;
-
-  document.getElementById('simResults').innerHTML = [
-    { label: '실지급 관리비', val: fws(actual), sub: `차감 ${fw(ded)}`, cls: actual >= 0 ? '' : 'hi-red' },
-    { label: '허브 실수취', val: fws(hubGet), sub: hubGet < 0 ? '허브 추가 납부' : '허브 수익', cls: hubGet >= 0 ? 'hi-green' : 'hi-red' },
-    { label: '본사 월 손익', val: fws(hqAfter), sub: '관리비 지급 후', cls: hqAfter >= 0 ? 'hi-green' : 'hi-red' },
-    { label: '현재 대비', val: fws(diff), sub: diff >= 0 ? '개선' : '악화', cls: diff >= 0 ? 'hi-green' : 'hi-red' }
-  ].map(it => `<div class="metric ${it.cls}"><div class="m-label">${it.label}</div><div class="m-val" style="font-size:14px;">${it.val}</div><div class="m-sub">${it.sub}</div></div>`).join('');
+function roiPctPreview(gain, cost) {
+  if (!cost) return '—';
+  return (((gain - cost) / Math.abs(cost)) * 100).toFixed(1);
 }
 
 async function runAI() {
@@ -662,11 +687,15 @@ async function runAI() {
 
   const prompt = `당신은 라스트마일 물류 운영 컨설턴트입니다. 아래 허브 지역의 손익 데이터를 분석해주세요.
 
-[현황]
+[현황 (관리비 미지급)]
 - 월 배달건수: ${s.yCount.toLocaleString()}건
-- 본사 월 수익: ${f(s.hqRevMonth)} (건당 마진 ${f(s.hqMargin)} × 월건수)
+- 건당 본사 마진: ${f(s.hqMargin)} (매출-매입+콜비, 고정)
+- 본사 월 수익: ${f(s.hqRevMonth)}
 - 페널티 합산: 손해배상 ${f(s.penProd)} + 장기지연 ${f(s.penDelay)} + SLA ${f(s.penSla)} = ${f(s.penTotal)}
 - 현재 월 순손익: ${f(s.hqNow)} ${s.hqNow<0?'(손해)':''}
+
+[관리비 지급 후 예상]
+- 페널티 예상 감소율: ${s.penReduce}% → 절감액 ${f(s.penSave)}
 
 [허브 관점]
 - 요기배달 건당 허브 수익: ${f(s.yHubPerUnit)}
