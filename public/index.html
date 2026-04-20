@@ -168,18 +168,9 @@ input[type=range]{width:100%;accent-color:var(--amber);height:4px;}
         <input type="number" id="y_rider" value="150" step="50" oninput="calc()"/>
       </div>
     </div>
-  </div>
-
-  <!-- 본사 데이터 -->
-  <div class="sec">
-    <div class="sec-title">본사 누적 데이터</div>
     <div class="field">
-      <div class="fl">건당 본사 마진 (원, 매출-매입)</div>
+      <div class="fl">건당 본사 마진 (원, 매출-매입+콜비)</div>
       <input type="number" id="hq_margin" value="456" step="10" oninput="calc()"/>
-    </div>
-    <div class="field">
-      <div class="fl">C2C 관리비 수익 (월, 원)</div>
-      <input type="number" id="c_hq_rev" value="154900" step="10000" oninput="calc()"/>
     </div>
   </div>
 
@@ -417,7 +408,6 @@ function calc() {
   const cDaily   = n('c_daily') || 1;
   const cRider   = n('c_rider');
   const hqMargin = n('hq_margin');
-  const cHqRev   = n('c_hq_rev');
   const penProd  = n('pen_product');
   const penDelay = n('pen_delay');
   const penSla   = n('pen_sla');
@@ -442,7 +432,7 @@ function calc() {
   const gapPct = cHubPerUnit > 0 ? (cHubPerUnit - yHubPerUnit) / cHubPerUnit * 100 : 0;
 
   // 본사
-  const hqRevMonth = hqMargin * yCount + cHqRev;
+  const hqRevMonth = hqMargin * yCount;
   const hqNow = hqRevMonth - penTotal;
 
   // 관리비 계산
@@ -492,9 +482,9 @@ function calc() {
 
   document.getElementById('heroGrid').innerHTML = `
     <div class="hero-stat">
-      <div class="hs-label">본사 월 수익 (마진+C2C)</div>
+      <div class="hs-label">본사 월 수익</div>
       <div class="hs-val">${fw(hqRevMonth)}</div>
-      <div class="hs-sub">건당 ${fw(hqMargin)} × ${yCount.toLocaleString()}건 + C2C ${fw(cHqRev)}</div>
+      <div class="hs-sub">건당 마진 ${fw(hqMargin)} × ${yCount.toLocaleString()}건</div>
     </div>
     <div class="hero-stat red">
       <div class="hs-label">페널티 전액 부담</div>
@@ -631,7 +621,7 @@ function calc() {
       <span class="roi-val" style="color:${clr(roiNet)}">${roiPct>=0?'+':''}${roiPct.toFixed(1)}%</span>
     </div>`;
 
-  window._S = { yCount, hqMargin, cHqRev, penProd, penDelay, penSla, penTotal, penReduce, penExpected, penSave, rate,
+  window._S = { yCount, hqMargin, penProd, penDelay, penSla, penTotal, penReduce, penExpected, penSave, rate,
     yHubPerUnit, cHubPerUnit, yHubRev, cHubRev, gap, gapPct,
     hqRevMonth, hqNow, setMgmt, mgmtDesc, mgmtTypeLabel,
     mgmtBreakEven, mgmtRecovery, mgmtGap, setResult,
@@ -674,7 +664,7 @@ async function runAI() {
 
 [현황]
 - 월 배달건수: ${s.yCount.toLocaleString()}건
-- 본사 월 수익: ${f(s.hqRevMonth)} (건당 마진 ${f(s.hqMargin)} + C2C ${f(s.cHqRev)})
+- 본사 월 수익: ${f(s.hqRevMonth)} (건당 마진 ${f(s.hqMargin)} × 월건수)
 - 페널티 합산: 손해배상 ${f(s.penProd)} + 장기지연 ${f(s.penDelay)} + SLA ${f(s.penSla)} = ${f(s.penTotal)}
 - 현재 월 순손익: ${f(s.hqNow)} ${s.hqNow<0?'(손해)':''}
 
